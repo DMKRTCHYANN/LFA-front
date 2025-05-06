@@ -24,6 +24,7 @@
           <input
               v-model="languages.code"
               class="bg-white text-black w-full p-2 border"
+              :class="{'border-red-500': !languages.code && errors.name}"
               required
           />
           <p v-if="errors.code" class="text-red-500 text-sm mt-1">{{ errors.code[0] }}</p>
@@ -74,15 +75,15 @@
     </div>
   </div>
 </template>
-
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import {ref} from 'vue';
+import {useRouter} from 'vue-router';
 
 definePageMeta({
   layout: 'navbar',
 });
 
+const toast = useToast();
 const router = useRouter();
 const imagePreview = ref(null);
 const loading = ref(false);
@@ -106,36 +107,53 @@ const handleFileChange = (event) => {
 };
 
 const createLanguages = async () => {
-  loading.value = true;
-  errors.value = {};
+  try {
+    loading.value = true;
+    errors.value = {};
 
-  const formData = new FormData();
-  formData.append('name', languages.value.name);
-  formData.append('code', languages.value.code);
-  if (languages.value.image) {
-    console.log(languages.value.image)
-    formData.append('image', languages.value.image);
+    const formData = new FormData();
+    formData.append('name', languages.value.name);
+    formData.append('code', languages.value.code);
+    if (languages.value.image) {
+      formData.append('image', languages.value.image);
+    }
+
+    const response = await fetch('/api/languages/', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      if (data.errors) {
+        errors.value = data.errors; // Ошибки от сервера
+      } else {
+        throw new Error('Unknown error occurred');
+      }
+    } else {
+      toast.add({
+        title: 'Success!',
+        description: 'Language has been created successfully',
+        color: 'blue',
+        timeout: 3000,
+      });
+      await router.push('/languages');
+    }
+  } catch (error) {
+    if (!Object.keys(errors.value).length) {
+      toast.add({
+        title: 'Error!',
+        description: 'Failed to create language. Please try again.',
+        color: 'red',
+        timeout: 3000,
+      });
+    }
+  } finally {
+    loading.value = false;
   }
-  formData.append('_method', 'POST');
-
-  const { data, error } = await useFetch('/api/languages/', {
-    method: 'POST',
-    body: formData,
-    headers: { Accept: 'application/json' },
-    async beforeFetch({ options }) {
-      options.body = formData;
-      return { options };
-    },
-  });
-
-  loading.value = false;
-
-  if (error && error.value) {
-    errors.value = error.value.data?.errors || {};
-    return;
-  }
-
-  await router.push('/languages');
 };
 
 </script>

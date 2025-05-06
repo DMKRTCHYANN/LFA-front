@@ -72,7 +72,6 @@ const login = async () => {
       throw new Error(errorData.message || 'Failed to login');
     }
     const data = await response.json();
-    console.log('Login successful, waiting before redirect...');
     const tokenCookie = useCookie('auth_token');
     tokenCookie.value = data.access_token;
     await delay(2000);
