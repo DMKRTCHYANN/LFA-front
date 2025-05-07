@@ -10,6 +10,9 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  ui: {
+    colorMode: false
+  },
   nitro: {
     devProxy: {
       "/api/": {

@@ -117,7 +117,6 @@ const createLanguages = async () => {
     if (languages.value.image) {
       formData.append('image', languages.value.image);
     }
-
     const response = await fetch('/api/languages/', {
       method: 'POST',
       body: formData,
@@ -129,7 +128,7 @@ const createLanguages = async () => {
     if (!response.ok) {
       const data = await response.json();
       if (data.errors) {
-        errors.value = data.errors; // Ошибки от сервера
+        errors.value = data.errors;
       } else {
         throw new Error('Unknown error occurred');
       }

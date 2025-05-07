@@ -36,6 +36,30 @@
         />
         Countries
       </nuxt-link>
+
+      <nuxt-link
+          to="/topics"
+          class="flex items-center mb-[20px] justify-center w-full max-w-xs px-4 py-2 text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-1"
+      >
+        <img
+            src="/images/topic.svg"
+            alt="Languages"
+            class="w-6 h-6 mr-2 transition-transform duration-300 hover:scale-110"
+        />
+        Topics
+      </nuxt-link>
+
+      <nuxt-link
+          to="/tags"
+          class="flex items-center mb-[20px] justify-center w-full max-w-xs px-4 py-2 text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-1"
+      >
+        <img
+            src="/images/tags.svg"
+            alt="Languages"
+            class="w-6 h-6 mr-2 transition-transform duration-300 hover:scale-110"
+        />
+        Tags
+      </nuxt-link>
     </div>
     <div class="w-[85%] bg-gray-200 p-6">
       <NuxtPage />

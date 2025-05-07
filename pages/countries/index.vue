@@ -10,12 +10,12 @@
       <template #actions-data="{ row }">
         <div class="flex gap-4">
           <NuxtLink :to="`/countries/${row.id}/edit`">
-            <img src="/images/edit.svg" alt="Edit" class="cursor-pointer w-7 h-7 dark:invert"/>
+            <img src="/images/edit.svg" alt="Edit" class="cursor-pointer w-7 h-7 "/>
           </NuxtLink>
           <img
               src="/images/delete.svg"
               alt="Delete"
-              class="cursor-pointer w-7 h-7 dark:invert"
+              class="cursor-pointer w-7 h-7 "
               @click="handleDelete(row)"
           />
         </div>

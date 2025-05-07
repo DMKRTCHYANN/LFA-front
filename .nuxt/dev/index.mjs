@@ -1229,7 +1229,7 @@ async function errorHandler(error, event) {
   // H3 will handle fallback
 }
 
-const script$1 = `
+const script = `
 if (!window.__NUXT_DEVTOOLS_TIME_METRIC__) {
   Object.defineProperty(window, '__NUXT_DEVTOOLS_TIME_METRIC__', {
     value: {},
@@ -1242,7 +1242,7 @@ window.__NUXT_DEVTOOLS_TIME_METRIC__.appInit = Date.now()
 
 const _epG9dJzHVZ_fSIHa92ZEa1vvU0sscr6_LVrJAVhQPuc = (function(nitro) {
   nitro.hooks.hook("render:html", (htmlContext) => {
-    htmlContext.head.push(`<script>${script$1}<\/script>`);
+    htmlContext.head.push(`<script>${script}<\/script>`);
   });
 });
 
@@ -1334,18 +1334,9 @@ function onConsoleLog(callback) {
   consola$1.wrapConsole();
 }
 
-const script = "\"use strict\";(()=>{const t=window,e=document.documentElement,c=[\"dark\",\"light\"],n=getStorageValue(\"localStorage\",\"nuxt-color-mode\")||\"system\";let i=n===\"system\"?u():n;const r=e.getAttribute(\"data-color-mode-forced\");r&&(i=r),l(i),t[\"__NUXT_COLOR_MODE__\"]={preference:n,value:i,getColorScheme:u,addColorScheme:l,removeColorScheme:d};function l(o){const s=\"\"+o+\"\",a=\"\";e.classList?e.classList.add(s):e.className+=\" \"+s,a&&e.setAttribute(\"data-\"+a,o)}function d(o){const s=\"\"+o+\"\",a=\"\";e.classList?e.classList.remove(s):e.className=e.className.replace(new RegExp(s,\"g\"),\"\"),a&&e.removeAttribute(\"data-\"+a)}function f(o){return t.matchMedia(\"(prefers-color-scheme\"+o+\")\")}function u(){if(t.matchMedia&&f(\"\").media!==\"not all\"){for(const o of c)if(f(\":\"+o).matches)return o}return\"light\"}})();function getStorageValue(t,e){switch(t){case\"localStorage\":return window.localStorage.getItem(e);case\"sessionStorage\":return window.sessionStorage.getItem(e);case\"cookie\":return getCookie(e);default:return null}}function getCookie(t){const c=(\"; \"+window.document.cookie).split(\"; \"+t+\"=\");if(c.length===2)return c.pop()?.split(\";\").shift()}";
-
-const _y5u0GNiHpA4_Ze6BeAJfm5rvze8v9lkeNwjhsGBJ2A = (function(nitro) {
-  nitro.hooks.hook("render:html", (htmlContext) => {
-    htmlContext.head.push(`<script>${script}<\/script>`);
-  });
-});
-
 const plugins = [
   _epG9dJzHVZ_fSIHa92ZEa1vvU0sscr6_LVrJAVhQPuc,
-_SOIDD_7ma70Beg9TqYjLV4oLdR9RLrerBb18AITGC8,
-_y5u0GNiHpA4_Ze6BeAJfm5rvze8v9lkeNwjhsGBJ2A
+_SOIDD_7ma70Beg9TqYjLV4oLdR9RLrerBb18AITGC8
 ];
 
 function defineRenderHandler(render) {

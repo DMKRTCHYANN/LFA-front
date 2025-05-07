@@ -93,7 +93,7 @@ const language = ref({
 
 const getLanguages = async () => {
   try {
-    const response = await useFetch(`/api/languages/${route.params.id}`, {
+    const response = await $fetch(`/api/languages/${route.params.id}`, {
       method: 'GET',
     });
     if (response.data) {

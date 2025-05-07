@@ -2,16 +2,16 @@
   <div class="flex">
     <div class="w-full bg-white rounded-lg max-w-[1500px] shadow-lg">
       <div class="bg-blue-600 rounded-t-lg">
-        <h1 class="text-xl text-white p-4">Create Country</h1>
+        <h1 class="text-xl text-white p-4">Create Tag</h1>
       </div>
       <div class="p-4">
         <div class="mb-4">
           <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-            Name (EN) <span class="text-red-500">*</span>
+            Name  <span class="text-red-500">*</span>
           </label>
           <input
               id="name"
-              v-model="country.name.en"
+              v-model="tag.name.en"
               class="bg-white text-black w-full p-2 border"
               :class="{'border-red-500': errors['name.en']}"
               required
@@ -22,13 +22,13 @@
         </div>
         <div class="flex justify-center gap-4">
           <button
-              @click="router.push('/countries')"
+              @click="router.push('/tags')"
               class="bg-gray-500 p-3 text-white rounded-lg hover:bg-gray-600 transition-all duration-300 shadow-sm"
           >
             Cancel
           </button>
           <button
-              @click="createCountry"
+              @click="createTags"
               class="bg-blue-500 p-3 text-white rounded-lg hover:bg-blue-600 transition-all duration-300 shadow-sm"
               :disabled="loading"
           >
@@ -40,7 +40,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -53,28 +52,27 @@ const toast = useToast();
 const router = useRouter();
 const loading = ref(false);
 const errors = ref({});
-const country = ref({
+const tag = ref({
   name: {
     en: '',
   },
 });
 
-const createCountry = async () => {
+const createTags = async () => {
   try {
     loading.value = true;
     errors.value = {};
 
-    const response = await fetch('/api/countries/', {
+    const response = await fetch('/api/tags/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
       body: JSON.stringify({
-        name: country.value.name,
+        name: tag.value.name,
       }),
     });
-
     if (!response.ok) {
       const data = await response.json();
       if (data.errors) {
@@ -85,17 +83,17 @@ const createCountry = async () => {
     } else {
       toast.add({
         title: 'Success!',
-        description: 'Country has been created successfully',
+        description: 'Tag has been created successfully',
         color: 'blue',
         timeout: 3000,
       });
-      await router.push('/countries');
+      await router.push('/tags');
     }
   } catch (error) {
     if (!Object.keys(errors.value).length) {
       toast.add({
         title: 'Error!',
-        description: 'Failed to create country. Please try again.',
+        description: 'Failed to create tag. Please try again.',
         color: 'red',
         timeout: 3000,
       });
