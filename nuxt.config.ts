@@ -10,8 +10,24 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  vite: {
+    optimizeDeps: {
+      include: [
+        "@fawmi/vue-google-maps",
+        "fast-deep-equal"
+      ]
+    }
+  },
+  plugins: [
+    '~/plugins/google-maps.client.js'
+  ],
   ui: {
     colorMode: false
+  },
+  runtimeConfig: {
+    public: {
+      googleMapsApiKey: 'AIzaSyDZrlzgVNXCPNCv-pGTjYN-Ic_DofQk8gE'
+    }
   },
   nitro: {
     devProxy: {

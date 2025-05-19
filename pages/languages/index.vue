@@ -58,7 +58,6 @@ const columns = [
   { key: 'actions', label: 'Actions' },
 ]
 
-
 const getLanguages = async () => {
   try {
     const { data } = await useFetch("/api/languages",)

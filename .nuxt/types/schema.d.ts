@@ -122,7 +122,7 @@ declare module 'nuxt/schema' {
    },
   }
   interface PublicRuntimeConfig {
-
+   googleMapsApiKey: string,
   }
 }
 declare module 'vue' {

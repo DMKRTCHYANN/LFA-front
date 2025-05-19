@@ -53,7 +53,7 @@ const columns = [
 
 const getTags = async () => {
   try {
-    const { data } = await useFetch("/api/tags",)
+    const { data } = await useFetch("/api/tags")
     tags.value = data.value?.data || []
   } catch (err) {
     console.error("Error loading tags:", err)

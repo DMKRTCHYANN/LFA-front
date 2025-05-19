@@ -2,7 +2,7 @@
   <div>
     <div class="flex items-center justify-between p-4">
       <nuxt-link
-          to="/countries/create"
+          to="/materials/create"
           class="flex items-center justify-center max-w-[200px] w-full px-4 py-2 text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-lg shadow-md transition-all duration-300 transform"
       >
         Create new Material
@@ -14,34 +14,33 @@
           class="w-10 h-10 cursor-pointer hover:opacity-75 transition-opacity duration-200"
       />
     </div>
-    <div>
-
+    <div class="overflow-x-auto">
       <UTable :rows="materials" :columns="columns">
         <template #actions-data="{ row }">
           <div class="flex gap-4">
             <NuxtLink :to="`/materials/${row.id}/edit`">
-              <img src="/images/edit.svg" alt="Edit" class="cursor-pointer w-7 h-7 "/>
+              <img src="/images/edit.svg" alt="Edit" class="cursor-pointer w-7 h-7"/>
             </NuxtLink>
             <img
                 src="/images/delete.svg"
                 alt="Delete"
-                class="cursor-pointer w-7 h-7 "
+                class="cursor-pointer w-7 h-7"
                 @click="handleDelete(row)"
             />
           </div>
         </template>
       </UTable>
-      <UModal v-model="isModalOpen">
-        <div class="p-4">
-          <h3 class="text-lg font-medium mb-4">Confirm Delete</h3>
-          <p>Are you sure you want to delete country "{{ selectedMaterial?.title.en }}"?</p>
-          <div class="flex justify-end gap-3 mt-6">
-            <UButton color="gray" @click="isModalOpen = false">Cancel</UButton>
-            <UButton color="red" @click="deleteMaterialHandler">Delete</UButton>
-          </div>
-        </div>
-      </UModal>
     </div>
+    <UModal v-model="isModalOpen">
+      <div class="p-4">
+        <h3 class="text-lg font-medium mb-4">Confirm Delete</h3>
+        <p>Are you sure you want to delete material "{{ selectedMaterial?.title.en }}"?</p>
+        <div class="flex justify-end gap-3 mt-6">
+          <UButton color="gray" @click="isModalOpen = false">Cancel</UButton>
+          <UButton color="red" @click="deleteMaterialHandler">Delete</UButton>
+        </div>
+      </div>
+    </UModal>
   </div>
 </template>
 
@@ -61,37 +60,21 @@ const isModalOpen = ref(false)
 const selectedMaterial = ref(null)
 const columns = [
   { key: 'id', label: 'ID' },
-  { key: 'language_id', label: 'Language ID' },
-  { key: 'topic_id', label: 'Topic ID' },
-  { key: 'country_id', label: 'Country ID' },
-  { key: 'poster', label: 'Poster' },
   { key: 'title.en', label: 'Title' },
   { key: 'author.en', label: 'Author' },
-  { key: 'short_description.en', label: 'Short desc' },
-  { key: 'start_year', label: 'Start Year' },
-  { key: 'end_year', label: 'End Year' },
-  { key: 'tags', label: 'Tags' },
   { key: 'actions', label: 'Actions' },
-  { key: 'medium', label: 'Medium' },
-  { key: 'full_text', label: 'Full text' },
-  { key: 'book_url', label: 'Book URL' },
-  { key: 'video_player', label: 'Video Player' },
-  { key: 'source_url', label: 'Source URl' },
-  { key: 'source', label: 'Source' },
-  { key: 'author_url', label: 'Author URl' },
 ]
-
-
-
 
 const getMaterials = async () => {
   try {
-    const { data } = await useFetch("/api/materials",)
-    materials.value = data.value?.data || []
+    const response = await $fetch("/api/materials");
+    materials.value = response || [];
   } catch (err) {
-    console.error("Error loading languages:", err)
+    console.error("Error fetching materials:", err);
   }
-}
+};
+
+
 
 const deleteMaterialHandler = async () => {
   if (!selectedMaterial.value) return
@@ -132,7 +115,7 @@ const logout = () => {
 };
 
 const handleDelete = (material) => {
-  selectedMaterial.value = materials
+  selectedMaterial.value = material
   isModalOpen.value = true
 }
 

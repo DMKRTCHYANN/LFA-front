@@ -866,7 +866,9 @@ const _inlineRuntimeConfig = {
       }
     }
   },
-  "public": {},
+  "public": {
+    "googleMapsApiKey": "AIzaSyDZrlzgVNXCPNCv-pGTjYN-Ic_DofQk8gE"
+  },
   "icon": {
     "serverKnownCssClasses": []
   }
