@@ -1,33 +1,32 @@
 <template>
   <div>
-    <GMapMap
-        :center="center"
-        :api-key="apiKey"
-        :zoom="12"
-        style="width: 100%; height: 500px;"
-    >
-      <GMapMarker
-          :position="markerPosition"
-          :draggable="true"
-          @dragend="onMarkerDragEnd"
-      />
-      <div class="search-input-container">
-        <GMapAutocomplete
-            ref="autocomplete"
-            placeholder="Search a location"
-            @input="onInput"
-            @place_changed="setPlace"
-            class="google-search-input"
+      <GMapMap
+          :center="center"
+          :api-key="apiKey"
+          :zoom="12"
+          style="width: 100%; height: 500px;"
+      >
+        <GMapMarker
+            :position="markerPosition"
+            :draggable="true"
+            @dragend="onMarkerDragEnd"
         />
-      </div>
-    </GMapMap>
+        <div class="search-input-container">
+          <GMapAutocomplete
+              ref="autocomplete"
+              placeholder="Search a location"
+              @input="onInput"
+              @place_changed="setPlace"
+              class="google-search-input"
+          />
+        </div>
+      </GMapMap>
   </div>
 </template>
 <script setup>
 import { ref, watch } from "vue";
 
 const emit = defineEmits(["update:modelValue"]);
-
 const props = defineProps({
   apiKey: {
     type: String,
@@ -53,7 +52,6 @@ watch(() => props.modelValue, (newVal) => {
 });
 
 const onInput = () => {
-
 }
 
 const onMarkerDragEnd = (event) => {
@@ -105,7 +103,6 @@ const updateMap = (location) => {
   border-color: #4285f4;
   box-shadow: 0px 4px 8px rgba(66, 133, 244, 0.3);
 }
-
 
 .search-icon svg {
   width: 20px;
