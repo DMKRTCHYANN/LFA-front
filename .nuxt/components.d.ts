@@ -12,7 +12,8 @@ type HydrationStrategies = {
 }
 type LazyComponent<T> = (T & DefineComponent<HydrationStrategies, {}, {}, {}, {}, {}, {}, { hydrated: () => void }>)
 interface _GlobalComponents {
-      'LocationSelector': typeof import("../components/LocationSelector.vue")['default']
+      'LanguageSelector': typeof import("../components/LanguageSelector.vue")['default']
+    'LocationSelector': typeof import("../components/LocationSelector.vue")['default']
     'Notification': typeof import("../components/Notification.vue")['default']
     'PasswordInput': typeof import("../components/PasswordInput.vue")['default']
     'UAccordion': typeof import("../node_modules/@nuxt/ui/dist/runtime/components/elements/Accordion.vue")['default']
@@ -91,7 +92,8 @@ interface _GlobalComponents {
     'UModals': IslandComponent<typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']>
     'USlideovers': IslandComponent<typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']>
     'NuxtRouteAnnouncer': IslandComponent<typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']>
-      'LazyLocationSelector': LazyComponent<typeof import("../components/LocationSelector.vue")['default']>
+      'LazyLanguageSelector': LazyComponent<typeof import("../components/LanguageSelector.vue")['default']>
+    'LazyLocationSelector': LazyComponent<typeof import("../components/LocationSelector.vue")['default']>
     'LazyNotification': LazyComponent<typeof import("../components/Notification.vue")['default']>
     'LazyPasswordInput': LazyComponent<typeof import("../components/PasswordInput.vue")['default']>
     'LazyUAccordion': LazyComponent<typeof import("../node_modules/@nuxt/ui/dist/runtime/components/elements/Accordion.vue")['default']>
@@ -176,6 +178,7 @@ declare module 'vue' {
   export interface GlobalComponents extends _GlobalComponents { }
 }
 
+export const LanguageSelector: typeof import("../components/LanguageSelector.vue")['default']
 export const LocationSelector: typeof import("../components/LocationSelector.vue")['default']
 export const Notification: typeof import("../components/Notification.vue")['default']
 export const PasswordInput: typeof import("../components/PasswordInput.vue")['default']
@@ -255,6 +258,7 @@ export const NuxtIsland: typeof import("../node_modules/nuxt/dist/app/components
 export const UModals: IslandComponent<typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']>
 export const USlideovers: IslandComponent<typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']>
 export const NuxtRouteAnnouncer: IslandComponent<typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']>
+export const LazyLanguageSelector: LazyComponent<typeof import("../components/LanguageSelector.vue")['default']>
 export const LazyLocationSelector: LazyComponent<typeof import("../components/LocationSelector.vue")['default']>
 export const LazyNotification: LazyComponent<typeof import("../components/Notification.vue")['default']>
 export const LazyPasswordInput: LazyComponent<typeof import("../components/PasswordInput.vue")['default']>

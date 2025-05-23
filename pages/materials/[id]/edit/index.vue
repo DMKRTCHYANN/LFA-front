@@ -35,16 +35,6 @@
           </div>
         </div>
         <div class="mb-4">
-          <button
-              @click="submitLanguage"
-              class="bg-green-500 p-2 text-white rounded-lg hover:bg-green-600 transition-all duration-300 shadow-sm"
-              :disabled="!material.language_id || loading"
-          >
-            <span v-if="loading">Submitting...</span>
-            <span v-else>Submit Language</span>
-          </button>
-        </div>
-        <div class="mb-4">
           <label for="topic" class="block text-sm font-medium text-gray-700 mb-2">
             Topic ID <span class="text-red-500">*</span>
           </label>
@@ -126,9 +116,7 @@
               :disabled="!currentLanguageCode"
               required
           />
-          <p v-if="errors['title.' + currentLanguageCode]" class="text-red-500 text-sm mt-1">
-            {{ errors['title.' + currentLanguageCode][0] }}
-          </p>
+          <p>Current title: {{ material.title[currentLanguageCode] }}</p>
         </div>
         <div class="mb-4">
           <label for="author" class="block text-sm font-medium text-gray-700 mb-2">
@@ -329,13 +317,11 @@
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Select Location <span class="text-red-500">*</span>
           </label>
-          <client-only>
             <LocationSelector
                 :api-key="$config.public.googleMapsApiKey"
-                v-model="markerPosition"
+                v-model="location"
                 style="height: 500px; width: 100%; position: relative"
             />
-          </client-only>
         </div>
         <div class="mb-4">
           <label for="book_url" class="block text-sm font-medium text-gray-700 mb-2">
@@ -409,7 +395,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref, onMounted, watch, toRaw, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
@@ -435,7 +420,6 @@ const tags = ref([]);
 const countries = ref([]);
 const mediums = ref([]);
 const currentLanguageCode = ref('');
-
 const material = ref({
   language_id: '',
   topic_id: '',
@@ -454,7 +438,7 @@ const material = ref({
   video: '',
   source_url: '',
   author_url: '',
-  location: { coordinates: [40.180438, 44.488690] },
+  location: { coordinates: [] },
 });
 
 const markerPosition = ref({
@@ -467,10 +451,10 @@ const markerOptions = ref({
   draggable: true,
 });
 
-// Watch markerPosition to update material.location
 watch(
     markerPosition,
     (newPosition) => {
+      console.log('Marker position updated:', newPosition);
       if (newPosition) {
         material.value.location.coordinates = [newPosition.lat, newPosition.lng];
       }
@@ -478,20 +462,27 @@ watch(
     { deep: true }
 );
 
-// Initialize language-specific fields when languages are fetched
 const initializeLanguageFields = () => {
   languages.value.forEach((language) => {
+    // Only initialize if the field doesn't exist or is empty
     if (!material.value.title[language.code]) {
-      material.value.title[language.code] = '';
-      material.value.author[language.code] = '';
-      material.value.short_description[language.code] = '';
-      material.value.full_text[language.code] = '';
-      material.value.source[language.code] = '';
+      material.value.title[language.code] = material.value.title[language.code] || '';
+    }
+    if (!material.value.author[language.code]) {
+      material.value.author[language.code] = material.value.author[language.code] || '';
+    }
+    if (!material.value.short_description[language.code]) {
+      material.value.short_description[language.code] = material.value.short_description[language.code] || '';
+    }
+    if (!material.value.full_text[language.code]) {
+      material.value.full_text[language.code] = material.value.full_text[language.code] || '';
+    }
+    if (!material.value.source[language.code]) {
+      material.value.source[language.code] = material.value.source[language.code] || '';
     }
   });
 };
 
-// Watch for language_id changes to set currentLanguageCode and clear errors
 watch(
     () => material.value.language_id,
     (newLanguageId) => {
@@ -602,46 +593,56 @@ const fetchCountries = async () => {
   }
 };
 
-const fetchMaterial = async () => {
+const getMaterial = async () => {
   try {
     const response = await fetch(`/api/materials/${route.params.id}`);
-    if (!response.ok) throw new Error('Failed to fetch material');
-    const result = await response.json();
-    const data = result.data;
+    if (!response.ok) {
+      throw new Error('Failed to fetch material');
+    }
 
-    // Populate material with fetched data
+    const result = await response.json();
+
+    if (!result) {
+      throw new Error('Invalid data structure');
+    }
+
+    const data = result;
     material.value = {
-      language_id: data.language_id || '',
-      topic_id: data.topic_id || '',
-      country_id: data.country_id || '',
+      language_id: String(data.language_id || ''),
+      topic_id: String(data.topic_id || ''),
+      country_id: String(data.country_id || ''),
       poster: data.poster || '',
       title: data.title || {},
       author: data.author || {},
       short_description: data.short_description || {},
       full_text: data.full_text || {},
       source: data.source || {},
-      start_year: data.start_year || '',
-      end_year: data.end_year || '',
+      start_year: String(data.start_year || ''),
+      end_year: String(data.end_year || ''),
       medium: data.medium || '',
-      tags: data.tags ? data.tags.map((tag) => tag.id) : [],
+      tags: data.tags?.map((tag) => tag.id) || [],
       book_url: data.book_url || '',
       video: data.video || '',
       source_url: data.source_url || '',
       author_url: data.author_url || '',
-      location: data.location || { coordinates: [40.180438, 44.488690] },
+      location: data.location || { coordinates: [0, 0] },
     };
 
-    // Update marker position
     if (data.location?.coordinates?.length === 2) {
-      markerPosition.value = {
-        lat: data.location.coordinates[0],
-        lng: data.location.coordinates[1],
-      };
+      const [lat, lng] = data.location.coordinates;
+      markerPosition.value = { lat, lng };
       markerOptions.value.position = markerPosition.value;
     }
 
-    // Initialize language fields after fetching material
-    initializeLanguageFields();
+    if (languages.value.length) {
+      const selectedLanguage = languages.value.find(
+          (lang) => lang.id === parseInt(data.language_id)
+      );
+      currentLanguageCode.value = selectedLanguage ? selectedLanguage.code : '';
+    }
+
+    console.log('Fetched material:', material.value);
+    console.log('Current language code:', currentLanguageCode.value);
   } catch (error) {
     console.error('Error fetching material:', error);
     toast.add({
@@ -650,9 +651,10 @@ const fetchMaterial = async () => {
       color: 'red',
       timeout: 3000,
     });
-    await router.push({ name: 'NotFound' });
   }
 };
+
+
 
 const submitLanguage = async () => {
   if (!currentLanguageCode.value) {
@@ -673,7 +675,6 @@ const submitLanguage = async () => {
     source: material.value.source[currentLanguageCode.value],
   };
 
-  // Client-side validation
   const newErrors = {};
   if (!languageFields.title) newErrors['title.' + currentLanguageCode.value] = ['Title is required'];
   if (!languageFields.author) newErrors['author.' + currentLanguageCode.value] = ['Author is required'];
@@ -701,12 +702,21 @@ const submitLanguage = async () => {
   });
 };
 
+const location = computed({
+  get: () => ({
+    lat: material.value.location.coordinates[1],
+    lng: material.value.location.coordinates[0],
+  }),
+  set: (newLocation) => {
+    material.value.location.coordinates = [newLocation.lat, newLocation.lng];
+  },
+});
+
+
 const updateMaterial = async () => {
   try {
     loading.value = true;
     errors.value = {};
-
-    // Client-side validation for required fields
     const newErrors = {};
     if (!material.value.language_id) newErrors['language_id'] = ['Language ID is required'];
     if (!material.value.topic_id) newErrors['topic_id'] = ['Topic ID is required'];
@@ -720,8 +730,6 @@ const updateMaterial = async () => {
     if (!material.value.author_url) newErrors['author_url'] = ['Author URL is required'];
     if (!material.value.location.coordinates.length)
       newErrors['location'] = ['Location coordinates are required'];
-
-    // Validate language fields
     const languageCodes = languages.value.map((lang) => lang.code);
     let hasValidLanguage = false;
     for (const code of languageCodes) {
@@ -739,7 +747,6 @@ const updateMaterial = async () => {
     if (!hasValidLanguage) {
       newErrors['language_fields'] = ['At least one language must have all fields filled'];
     }
-
     if (Object.keys(newErrors).length > 0) {
       errors.value = newErrors;
       toast.add({
@@ -750,13 +757,11 @@ const updateMaterial = async () => {
       });
       return;
     }
-
     const payload = toRaw(material.value);
     payload.location = {
       type: 'Point',
       coordinates: payload.location.coordinates,
     };
-
     const response = await fetch(`/api/materials/${route.params.id}`, {
       method: 'PUT',
       headers: {
@@ -805,13 +810,11 @@ const updateMaterial = async () => {
 
 onMounted(async () => {
   await nextTick();
-  await Promise.all([
-    fetchLanguages(),
-    fetchTopics(),
-    fetchCountries(),
-    fetchTags(),
-    fetchMediums(),
-    fetchMaterial(),
-  ]);
+  await getMaterial();
+  await fetchLanguages();
+  await fetchTopics();
+  await fetchCountries();
+  await fetchTags();
+  await fetchMediums();
 });
 </script>

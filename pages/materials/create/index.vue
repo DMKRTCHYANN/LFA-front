@@ -6,43 +6,43 @@
       </div>
       <div class="p-4">
         <div class="mb-4">
-          <label for="language" class="block text-sm font-medium text-gray-700 mb-2">
-            Language ID <span class="text-red-500">*</span>
-          </label>
-          <select
+<!--          <label for="language" class="block text-sm font-medium text-gray-700 mb-2">-->
+<!--            Language ID <span class="text-red-500">*</span>-->
+<!--          </label>-->
+<!--          <select-->
+<!--              v-model="material.language_id"-->
+<!--              class="bg-white text-black w-full p-2 border"-->
+<!--              :class="{'border-red-500': errors['language_id']}"-->
+<!--              required-->
+<!--              :disabled="isLanguagesLoading"-->
+<!--          >-->
+<!--            <option value="" disabled>-->
+<!--              {{ isLanguagesLoading ? 'Loading languages...' : 'Select a language' }}-->
+<!--            </option>-->
+<!--            <option-->
+<!--                v-for="language in languages"-->
+<!--                :key="language.id"-->
+<!--                :value="language.id"-->
+<!--            >-->
+<!--              {{ language.name }}-->
+<!--            </option>-->
+<!--          </select>-->
+
+
+          <USelectMenu
               v-model="material.language_id"
-              class="bg-white text-black w-full p-2 border"
-              :class="{'border-red-500': errors['language_id']}"
-              required
-              :disabled="isLanguagesLoading"
-          >
-            <option value="" disabled>
-              {{ isLanguagesLoading ? 'Loading languages...' : 'Select a language' }}
-            </option>
-            <option
-                v-for="language in languages"
-                :key="language.id"
-                :value="language.id"
-            >
-              {{ language.name }}
-            </option>
-          </select>
+              :options="languages"
+              placeholder="Enter language"
+          />
+
+
+
           <p v-if="errors['language_id']" class="text-red-500 text-sm mt-1">
             {{ errors['language_id'][0] }}
           </p>
           <div v-if="!isLanguagesLoading && languages.length === 0" class="text-red-500 text-sm mt-1">
             No languages available. Please try again later.
           </div>
-        </div>
-        <div class="mb-4">
-          <button
-              @click="submitLanguage"
-              class="bg-green-500 p-2 text-white rounded-lg hover:bg-green-600 transition-all duration-300 shadow-sm"
-              :disabled="!material.language_id || loading"
-          >
-            <span v-if="loading">Submitting...</span>
-            <span v-else>Submit Language</span>
-          </button>
         </div>
         <div class="mb-4">
           <label for="topic" class="block text-sm font-medium text-gray-700 mb-2">
@@ -115,6 +115,8 @@
           />
           <p v-if="errors.poster" class="text-red-500 text-sm mt-1">{{ errors.poster[0] }}</p>
         </div>
+
+
         <div class="mb-4">
           <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
             Title ({{ currentLanguageCode || 'Select a language' }}) <span class="text-red-500">*</span>
@@ -131,6 +133,9 @@
             {{ errors['title.' + currentLanguageCode][0] }}
           </p>
         </div>
+
+
+
         <div class="mb-4">
           <label for="author" class="block text-sm font-medium text-gray-700 mb-2">
             Author ({{ currentLanguageCode || 'Select a language' }}) <span class="text-red-500">*</span>
@@ -392,7 +397,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref, onMounted, watch, computed, toRaw } from 'vue';
 import { useRouter } from 'vue-router';
@@ -415,9 +419,9 @@ const languages = ref([]);
 const topics = ref([]);
 const tags = ref([]);
 const countries = ref([]);
+const selected = ref(languages[0])
 const mediums = ref([]);
 const currentLanguageCode = ref('');
-
 const material = ref({
   language_id: '',
   topic_id: '',
@@ -459,7 +463,6 @@ const location = computed({
   },
 });
 
-// Initialize language-specific fields when languages are fetched
 const initializeLanguageFields = () => {
   languages.value.forEach((language) => {
     if (!material.value.title[language.code]) {
@@ -472,8 +475,10 @@ const initializeLanguageFields = () => {
   });
 };
 
-// Watch for language_id changes to set currentLanguageCode
+
+
 watch(() => material.value.language_id, (newLanguageId) => {
+  alert(231)
   const selectedLanguage = languages.value.find(lang => lang.id === newLanguageId);
   currentLanguageCode.value = selectedLanguage ? selectedLanguage.code : '';
 });
@@ -485,7 +490,10 @@ const fetchLanguages = async () => {
       throw new Error('Failed to fetch languages');
     }
     const result = await response.json();
-    languages.value = result.data;
+    languages.value = result.data.map((element) => ({
+      label: element.name,
+      value: element.id,
+    }));
     initializeLanguageFields();
   } catch (error) {
     console.error('Error fetching languages:', error);
