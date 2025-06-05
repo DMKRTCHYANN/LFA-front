@@ -1,46 +1,17 @@
 <template>
-  <div class="flex">
-    <div class="w-full bg-white rounded-lg max-w-[1500px] shadow-lg">
+  <div class="flex flex-col">
+    <div class="w-full bg-white rounded-lg max-w-[1500px] shadow-lg mb-[30px]">
       <div class="bg-blue-600 rounded-t-lg">
         <h1 class="text-xl text-white p-4">Edit Material</h1>
       </div>
-      <div class="p-4">
-        <div class="mb-4">
-          <label for="language" class="block text-sm font-medium text-gray-700 mb-2">
-            Language ID <span class="text-red-500">*</span>
-          </label>
-          <select
-              v-model="material.language_id"
-              class="bg-white text-black w-full p-2 border"
-              :class="{'border-red-500': errors['language_id']}"
-              required
-              :disabled="isLanguagesLoading"
-          >
-            <option value="" disabled>
-              {{ isLanguagesLoading ? 'Loading languages...' : 'Select a language' }}
-            </option>
-            <option
-                v-for="language in languages"
-                :key="language.id"
-                :value="language.id"
-            >
-              {{ language.name }}
-            </option>
-          </select>
-          <p v-if="errors['language_id']" class="text-red-500 text-sm mt-1">
-            {{ errors['language_id'][0] }}
-          </p>
-          <div v-if="!isLanguagesLoading && languages.length === 0" class="text-red-500 text-sm mt-1">
-            No languages available. Please try again later.
-          </div>
-        </div>
+      <div class="p-6">
         <div class="mb-4">
           <label for="topic" class="block text-sm font-medium text-gray-700 mb-2">
             Topic ID <span class="text-red-500">*</span>
           </label>
           <select
               v-model="material.topic_id"
-              class="bg-white text-black w-full p-2 border"
+              class="bg-white text-black w-full p-2 border rounded-md"
               :class="{'border-red-500': errors['topic_id']}"
               required
               :disabled="isTopicsLoading"
@@ -69,13 +40,13 @@
           </label>
           <select
               v-model="material.country_id"
-              class="bg-white text-black w-full p-2 border"
+              class="bg-white text-black w-full p-2 border rounded-md"
               :class="{'border-red-500': errors['country_id']}"
               required
               :disabled="isCountriesLoading"
           >
             <option value="" disabled>
-              {{ isCountriesLoading ? 'Loading country...' : 'Select a country' }}
+              {{ isCountriesLoading ? 'Loading countries...' : 'Select a country' }}
             </option>
             <option
                 v-for="country in countries"
@@ -98,90 +69,13 @@
           </label>
           <input
               v-model="material.poster"
-              class="bg-white text-black placeholder-black w-full p-2 border"
+              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
               :class="{'border-red-500': errors.poster}"
               placeholder="Enter poster URL"
           />
           <p v-if="errors.poster" class="text-red-500 text-sm mt-1">{{ errors.poster[0] }}</p>
         </div>
-        <div class="mb-4">
-          <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
-            Title ({{ currentLanguageCode || 'Select a language' }}) <span class="text-red-500">*</span>
-          </label>
-          <input
-              v-model="material.title[currentLanguageCode]"
-              class="bg-white text-black w-full placeholder-black p-2 border"
-              :class="{'border-red-500': errors['title.' + currentLanguageCode]}"
-              :placeholder="'Enter title in ' + (currentLanguageCode || 'language')"
-              :disabled="!currentLanguageCode"
-              required
-          />
-          <p>Current title: {{ material.title[currentLanguageCode] }}</p>
-        </div>
-        <div class="mb-4">
-          <label for="author" class="block text-sm font-medium text-gray-700 mb-2">
-            Author ({{ currentLanguageCode || 'Select a language' }}) <span class="text-red-500">*</span>
-          </label>
-          <input
-              v-model="material.author[currentLanguageCode]"
-              class="bg-white text-black w-full placeholder-black p-2 border"
-              :class="{'border-red-500': errors['author.' + currentLanguageCode]}"
-              :placeholder="'Enter author in ' + (currentLanguageCode || 'language')"
-              :disabled="!currentLanguageCode"
-              required
-          />
-          <p v-if="errors['author.' + currentLanguageCode]" class="text-red-500 text-sm mt-1">
-            {{ errors['author.' + currentLanguageCode][0] }}
-          </p>
-        </div>
-        <div class="mb-4">
-          <label for="short_description" class="block text-sm font-medium text-gray-700 mb-2">
-            Short Description ({{ currentLanguageCode || 'Select a language' }}) <span class="text-red-500">*</span>
-          </label>
-          <input
-              v-model="material.short_description[currentLanguageCode]"
-              class="bg-white text-black w-full placeholder-black p-2 border"
-              :class="{'border-red-500': errors['short_description.' + currentLanguageCode]}"
-              :placeholder="'Enter short description in ' + (currentLanguageCode || 'language')"
-              :disabled="!currentLanguageCode"
-              required
-          />
-          <p v-if="errors['short_description.' + currentLanguageCode]" class="text-red-500 text-sm mt-1">
-            {{ errors['short_description.' + currentLanguageCode][0] }}
-          </p>
-        </div>
-        <div class="mb-4">
-          <label for="full_text" class="block text-sm font-medium text-gray-700 mb-2">
-            Full Text ({{ currentLanguageCode || 'Select a language' }}) <span class="text-red-500">*</span>
-          </label>
-          <input
-              v-model="material.full_text[currentLanguageCode]"
-              class="bg-white text-black placeholder-black w-full p-2 border"
-              :class="{'border-red-500': errors['full_text.' + currentLanguageCode]}"
-              :placeholder="'Enter full text in ' + (currentLanguageCode || 'language')"
-              :disabled="!currentLanguageCode"
-              required
-          />
-          <p v-if="errors['full_text.' + currentLanguageCode]" class="text-red-500 text-sm mt-1">
-            {{ errors['full_text.' + currentLanguageCode][0] }}
-          </p>
-        </div>
-        <div class="mb-4">
-          <label for="source" class="block text-sm font-medium text-gray-700 mb-2">
-            Source ({{ currentLanguageCode || 'Select a language' }}) <span class="text-red-500">*</span>
-          </label>
-          <input
-              v-model="material.source[currentLanguageCode]"
-              class="bg-white text-black placeholder-black w-full p-2 border"
-              :class="{'border-red-500': errors['source.' + currentLanguageCode]}"
-              :placeholder="'Enter source in ' + (currentLanguageCode || 'language')"
-              :disabled="!currentLanguageCode"
-              required
-          />
-          <p v-if="errors['source.' + currentLanguageCode]" class="text-red-500 text-sm mt-1">
-            {{ errors['source.' + currentLanguageCode][0] }}
-          </p>
-        </div>
+
         <div class="mb-4">
           <label for="start_year" class="block text-sm font-medium text-gray-700 mb-2">
             Start Year <span class="text-red-500">*</span>
@@ -189,7 +83,7 @@
           <input
               type="number"
               v-model="material.start_year"
-              class="bg-white text-black placeholder-black w-full p-2 border"
+              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
               :class="{'border-red-500': !material.start_year && errors.start_year}"
               placeholder="Enter start year"
               required
@@ -203,7 +97,7 @@
           <input
               type="number"
               v-model="material.end_year"
-              class="bg-white text-black placeholder-black w-full p-2 border"
+              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
               :class="{'border-red-500': !material.end_year && errors.end_year}"
               placeholder="Enter end year"
               required
@@ -216,7 +110,7 @@
           </label>
           <select
               v-model="material.medium"
-              class="bg-white text-black w-full p-2 border"
+              class="bg-white text-black w-full p-2 border rounded-md"
               :class="{'border-red-500': errors['medium']}"
               required
               :disabled="isMediumsLoading"
@@ -238,73 +132,23 @@
         </div>
         <div class="mb-4">
           <label for="tags" class="block text-sm font-medium text-gray-700 mb-2">
-            Tags ID
+            Tags <span class="text-red-500">*</span>
           </label>
-          <div class="relative">
-            <select
-                v-model="material.tags"
-                multiple
-                class="form-multiselect block w-full pl-3 pr-10 py-2 text-base rounded-lg border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-150"
-                :class="{
-                  'border-red-500 ring-red-500': errors['tags'],
-                  'border-gray-300': !errors['tags'],
-                  'opacity-50 bg-gray-100': isTagsLoading
-                }"
-                :disabled="isTagsLoading"
-                style="min-height: 120px;"
-            >
-              <option
-                  v-if="isTagsLoading"
-                  disabled
-                  class="text-gray-500"
-              >
-                Loading tags...
-              </option>
-              <template v-else>
-                <option
-                    disabled
-                    class="text-gray-400"
-                    :selected="material.tags.length === 0"
-                >
-                  Select tags (use Ctrl/Cmd for multiple)
-                </option>
-                <option
-                    v-for="tag in tags"
-                    :key="tag.id"
-                    :value="tag.id"
-                    class="px-3 py-2 hover:bg-blue-50 transition-colors"
-                    :class="{ 'bg-blue-100 font-bold': material.tags.includes(tag.id) }"
-                >
-                  {{ tag.name.en }}
-                </option>
-              </template>
-            </select>
-            <div class="mt-6">
-              <h3 class="font-semibold mb-2">Selected Tags:</h3>
-              <div v-if="material.tags.length === 0" class="text-gray-500">No tags selected</div>
-              <div v-else class="flex flex-wrap">
-                <div
-                    v-for="tagId in material.tags"
-                    :key="tagId"
-                    class="inline-flex items-center px-3 py-1 mr-2 mb-2 rounded-full bg-green-200 text-green-800 text-sm font-medium"
-                >
-                  {{ findTagName(tagId) }}
-                </div>
-              </div>
-            </div>
-            <div
-                v-if="!isTagsLoading && tags.length === 0"
-                class="absolute inset-0 bg-white flex items-center justify-center rounded-lg border border-dashed border-gray-200"
-            >
-              <span class="text-red-400 text-sm">
-                No tags available
-              </span>
-            </div>
+          <USelectMenu
+              v-model="material.tags"
+              color="blue"
+              :options="tags"
+              multiple
+              option-attribute="label"
+              value-attribute="value"
+              placeholder="Select Tags"
+              class="h-[60px] text-black"
+              :disabled="isTagsLoading"
+          />
+          <div v-if="!isTagsLoading && tags.length === 0" class="text-red-500 text-sm mt-1">
+            No tags available. Please try again later.
           </div>
-          <p
-              v-if="errors['tags']"
-              class="text-red-500 text-sm mt-1 flex items-center"
-          >
+          <p v-if="errors['tags']" class="text-red-500 text-sm mt-1 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd"
                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
@@ -312,24 +156,41 @@
             </svg>
             {{ errors['tags'][0] }}
           </p>
+          <div class="mt-4" v-if="!isTagsLoading">
+            <h3 class="text-sm font-medium text-gray-700 mb-2">Selected Tags:</h3>
+            <div v-if="material.tags.length === 0" class="text-gray-500 text-sm">
+              No tags selected
+            </div>
+            <div v-else class="flex flex-wrap gap-2">
+              <span
+                  v-for="tagId in material.tags"
+                  :key="tagId"
+                  class="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium"
+              >
+                {{ findTagName(tagId) }}
+                <button
+                    @click="removeTag(tagId)"
+                    class="ml-2 text-blue-600 hover:text-blue-800 focus:outline-none"
+                    title="Remove tag"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          clip-rule="evenodd"/>
+                  </svg>
+                </button>
+              </span>
+            </div>
+          </div>
         </div>
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Select Location <span class="text-red-500">*</span>
-          </label>
-            <LocationSelector
-                :api-key="$config.public.googleMapsApiKey"
-                v-model="location"
-                style="height: 500px; width: 100%; position: relative"
-            />
-        </div>
+
         <div class="mb-4">
           <label for="book_url" class="block text-sm font-medium text-gray-700 mb-2">
             Book URL <span class="text-red-500">*</span>
           </label>
           <input
               v-model="material.book_url"
-              class="bg-white text-black placeholder-black w-full p-2 border"
+              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
               :class="{'border-red-500': !material.book_url && errors.book_url}"
               placeholder="Enter book URL"
               required
@@ -342,7 +203,7 @@
           </label>
           <input
               v-model="material.video"
-              class="bg-white text-black placeholder-black w-full p-2 border"
+              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
               :class="{'border-red-500': !material.video && errors.video}"
               placeholder="Enter video URL"
               required
@@ -355,7 +216,7 @@
           </label>
           <input
               v-model="material.source_url"
-              class="bg-white text-black placeholder-black w-full p-2 border"
+              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
               :class="{'border-red-500': !material.source_url && errors.source_url}"
               placeholder="Enter source URL"
               required
@@ -368,12 +229,131 @@
           </label>
           <input
               v-model="material.author_url"
-              class="bg-white text-black placeholder-black w-full p-2 border"
+              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
               :class="{'border-red-500': !material.author_url && errors.author_url}"
               placeholder="Enter author URL"
               required
           />
           <p v-if="errors.author_url" class="text-red-500 text-sm mt-1">{{ errors.author_url[0] }}</p>
+        </div>
+        <div class="mb-6">
+          {{material.location}}
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Select Location <span class="text-red-500">*</span>
+          </label>
+          <LocationSelector
+              :api-key="$config.public.googleMapsApiKey"
+              v-model="location"
+              style="height: 500px; width: 100%; position: relative"
+          />
+          <p v-if="errors['location']" class="text-red-500 text-sm mt-1">
+            {{ errors['location'][0] }}
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="w-full bg-white rounded-lg max-w-[1500px] shadow-lg">
+      <div class="p-4">
+        <div class="mb-4">
+          <label for="language" class="block text-sm font-medium text-gray-700 mb-2">
+            Language <span class="text-red-500">*</span>
+          </label>
+          <USelectMenu
+              v-model="material.language_id"
+              color="blue"
+              :options="languages"
+              option-attribute="label"
+              value-attribute="value"
+              placeholder="Select a language"
+              :loading="isLanguagesLoading"
+              class="w-full"
+          />
+          <p v-if="errors['language_id']" class="text-red-500 text-sm mt-1">
+            {{ errors['language_id'][0] }}
+          </p>
+        </div>
+        <div v-if="currentLanguageCode">
+          <div class="mb-4">
+            <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+              Title ({{ currentLanguageCode }}) <span class="text-red-500">*</span>
+            </label>
+            <input
+                v-model="material.title[currentLanguageCode]"
+                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-md"
+                :class="{'border-red-500': errors['title.' + currentLanguageCode]}"
+                :placeholder="'Enter title in ' + currentLanguageCode"
+                :disabled="!currentLanguageCode"
+                required
+            />
+            <p v-if="errors['title.' + currentLanguageCode]" class="text-red-500 text-sm mt-1">
+              {{ errors['title.' + currentLanguageCode][0] }}
+            </p>
+          </div>
+          <div class="mb-4">
+            <label for="author" class="block text-sm font-medium text-gray-700 mb-2">
+              Author ({{ currentLanguageCode }}) <span class="text-red-500">*</span>
+            </label>
+            <input
+                v-model="material.author[currentLanguageCode]"
+                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-md"
+                :class="{'border-red-500': errors['author.' + currentLanguageCode]}"
+                :placeholder="'Enter author in ' + currentLanguageCode"
+                :disabled="!currentLanguageCode"
+                required
+            />
+            <p v-if="errors['author.' + currentLanguageCode]" class="text-red-500 text-sm mt-1">
+              {{ errors['author.' + currentLanguageCode][0] }}
+            </p>
+          </div>
+          <div class="mb-4">
+            <label for="short_description" class="block text-sm font-medium text-gray-700 mb-2">
+              Short Description ({{ currentLanguageCode }}) <span class="text-red-500">*</span>
+            </label>
+            <input
+                v-model="material.short_description[currentLanguageCode]"
+                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-md"
+                :class="{'border-red-500': errors['short_description.' + currentLanguageCode]}"
+                :placeholder="'Enter short description in ' + currentLanguageCode"
+                :disabled="!currentLanguageCode"
+                required
+            />
+            <p v-if="errors['short_description.' + currentLanguageCode]" class="text-red-500 text-sm mt-1">
+              {{ errors['short_description.' + currentLanguageCode][0] }}
+            </p>
+          </div>
+          <div class="mb-4">
+            <label for="full_text" class="block text-sm font-medium text-gray-700 mb-2">
+              Full Text ({{ currentLanguageCode }}) <span class="text-red-500">*</span>
+            </label>
+            <textarea
+                v-model="material.full_text[currentLanguageCode]"
+                class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
+                :class="{'border-red-500': errors['full_text.' + currentLanguageCode]}"
+                :placeholder="'Enter full text in ' + currentLanguageCode"
+                :disabled="!currentLanguageCode"
+                required
+                rows="6"
+            ></textarea>
+            <p v-if="errors['full_text.' + currentLanguageCode]" class="text-red-500 text-sm mt-1">
+              {{ errors['full_text.' + currentLanguageCode][0] }}
+            </p>
+          </div>
+          <div class="mb-4">
+            <label for="source" class="block text-sm font-medium text-gray-700 mb-2">
+              Source ({{ currentLanguageCode }}) <span class="text-red-500">*</span>
+            </label>
+            <input
+                v-model="material.source[currentLanguageCode]"
+                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-md"
+                :class="{'border-red-500': errors['source.' + currentLanguageCode]}"
+                :placeholder="'Enter source in ' + currentLanguageCode"
+                :disabled="!currentLanguageCode"
+                required
+            />
+            <p v-if="errors['source.' + currentLanguageCode]" class="text-red-500 text-sm mt-1">
+              {{ errors['source.' + currentLanguageCode][0] }}
+            </p>
+          </div>
         </div>
         <div class="flex justify-center gap-4">
           <button
@@ -396,7 +376,8 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, watch, toRaw, nextTick } from 'vue';
+import { Icon } from '@iconify/vue';
+import { ref, onMounted, watch, toRaw, computed, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import LocationSelector from '~/components/LocationSelector.vue';
 
@@ -442,8 +423,8 @@ const material = ref({
 });
 
 const markerPosition = ref({
-  lat: material.value.location.coordinates[0],
-  lng: material.value.location.coordinates[1],
+  lat: material.value.location.coordinates[1] || 0,
+  lng: material.value.location.coordinates[0] || 0,
 });
 
 const markerOptions = ref({
@@ -454,9 +435,8 @@ const markerOptions = ref({
 watch(
     markerPosition,
     (newPosition) => {
-      console.log('Marker position updated:', newPosition);
       if (newPosition) {
-        material.value.location.coordinates = [newPosition.lat, newPosition.lng];
+        material.value.location.coordinates = [newPosition.lng, newPosition.lat];
       }
     },
     { deep: true }
@@ -464,51 +444,49 @@ watch(
 
 const initializeLanguageFields = () => {
   languages.value.forEach((language) => {
-    // Only initialize if the field doesn't exist or is empty
-    if (!material.value.title[language.code]) {
-      material.value.title[language.code] = material.value.title[language.code] || '';
-    }
-    if (!material.value.author[language.code]) {
-      material.value.author[language.code] = material.value.author[language.code] || '';
-    }
-    if (!material.value.short_description[language.code]) {
-      material.value.short_description[language.code] = material.value.short_description[language.code] || '';
-    }
-    if (!material.value.full_text[language.code]) {
-      material.value.full_text[language.code] = material.value.full_text[language.code] || '';
-    }
-    if (!material.value.source[language.code]) {
-      material.value.source[language.code] = material.value.source[language.code] || '';
-    }
+    material.value.title[language.code] = material.value.title[language.code] || '';
+    material.value.author[language.code] = material.value.author[language.code] || '';
+    material.value.short_description[language.code] = material.value.short_description[language.code] || '';
+    material.value.full_text[language.code] = material.value.full_text[language.code] || '';
+    material.value.source[language.code] = material.value.source[language.code] || '';
   });
 };
 
 watch(
     () => material.value.language_id,
     (newLanguageId) => {
-      const selectedLanguage = languages.value.find((lang) => lang.id === parseInt(newLanguageId));
+      const selectedLanguage = languages.value.find((lang) => lang.value === newLanguageId);
       currentLanguageCode.value = selectedLanguage ? selectedLanguage.code : '';
-      errors.value = {}; // Clear errors when switching languages
+      errors.value = {};
     }
 );
 
 const findTagName = (tagId) => {
-  const tag = tags.value.find((t) => t.id === tagId);
-  return tag ? tag.name.en : '';
+  const tag = tags.value.find((t) => t.value === tagId);
+  return tag ? tag.label : 'Unknown Tag';
+};
+
+const removeTag = (tagId) => {
+  material.value.tags = material.value.tags.filter((id) => id !== tagId);
 };
 
 const fetchLanguages = async () => {
   try {
     const response = await fetch('/api/languages/');
-    if (!response.ok) throw new Error('Failed to fetch languages');
+    if (!response.ok) {
+      throw new Error('Failed to fetch languages');
+    }
     const result = await response.json();
-    languages.value = result.data;
-    initializeLanguageFields();
+    languages.value = result.data.map((element) => ({
+      label: element.name,
+      value: element.id,
+      code: element.code,
+    }));
   } catch (error) {
     console.error('Error fetching languages:', error);
     toast.add({
       title: 'Error!',
-      description: 'Failed to load languages. Please try again.',
+      description: 'Failed to load languages.',
       color: 'red',
       timeout: 3000,
     });
@@ -560,7 +538,10 @@ const fetchTags = async () => {
     const response = await fetch('/api/tags/');
     if (!response.ok) throw new Error('Failed to fetch tags');
     const result = await response.json();
-    tags.value = result.data;
+    tags.value = result.data.map((tag) => ({
+      label: tag.name.en,
+      value: tag.id,
+    }));
   } catch (error) {
     console.error('Error fetching tags:', error);
     toast.add({
@@ -601,7 +582,6 @@ const getMaterial = async () => {
     }
 
     const result = await response.json();
-
     if (!result) {
       throw new Error('Invalid data structure');
     }
@@ -629,20 +609,19 @@ const getMaterial = async () => {
     };
 
     if (data.location?.coordinates?.length === 2) {
-      const [lat, lng] = data.location.coordinates;
-      markerPosition.value = { lat, lng };
+      const [lng, lat] = data.location.coordinates;
+      markerPosition.value = { lng, lat };
       markerOptions.value.position = markerPosition.value;
     }
 
     if (languages.value.length) {
       const selectedLanguage = languages.value.find(
-          (lang) => lang.id === parseInt(data.language_id)
+          (lang) => lang.value === String(data.language_id)
       );
       currentLanguageCode.value = selectedLanguage ? selectedLanguage.code : '';
     }
 
-    console.log('Fetched material:', material.value);
-    console.log('Current language code:', currentLanguageCode.value);
+    initializeLanguageFields();
   } catch (error) {
     console.error('Error fetching material:', error);
     toast.add({
@@ -653,8 +632,6 @@ const getMaterial = async () => {
     });
   }
 };
-
-
 
 const submitLanguage = async () => {
   if (!currentLanguageCode.value) {
@@ -704,14 +681,13 @@ const submitLanguage = async () => {
 
 const location = computed({
   get: () => ({
-    lat: material.value.location.coordinates[1],
-    lng: material.value.location.coordinates[0],
+    lat: material.value.location.coordinates[0] || 0,
+    lng: material.value.location.coordinates[1] || 0,
   }),
   set: (newLocation) => {
     material.value.location.coordinates = [newLocation.lat, newLocation.lng];
   },
 });
-
 
 const updateMaterial = async () => {
   try {
@@ -758,6 +734,7 @@ const updateMaterial = async () => {
       return;
     }
     const payload = toRaw(material.value);
+    console.log('Sending payload:', JSON.stringify(payload, null, 2));
     payload.location = {
       type: 'Point',
       coordinates: payload.location.coordinates,
@@ -788,7 +765,7 @@ const updateMaterial = async () => {
       toast.add({
         title: 'Success!',
         description: 'Material has been updated successfully',
-        color: 'blue',
+        color: 'green',
         timeout: 3000,
       });
       await router.push('/');
@@ -810,8 +787,8 @@ const updateMaterial = async () => {
 
 onMounted(async () => {
   await nextTick();
-  await getMaterial();
   await fetchLanguages();
+  await getMaterial();
   await fetchTopics();
   await fetchCountries();
   await fetchTags();

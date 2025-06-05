@@ -6,14 +6,32 @@
       </div>
       <div class="p-4">
         <div class="mb-4">
+          <USelectMenu
+              color="blue"
+              v-model="topic.language_id"
+              :options="languages"
+              placeholder="Select a language"
+              :loading="isLanguagesLoading"
+          />
+        </div>
+        <div v-if="currentLanguageCode" class="mb-4">
           <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-            Name <span>*</span>
+            Name ({{ currentLanguageCode || 'Select a language' }}) <span class="text-red-500">*</span>
           </label>
           <input
-              id="name"
-              v-model="topic.name.en"
-              class="bg-white text-black w-full p-2 border"
+              v-model="topic.name[currentLanguageCode]"
+              class="bg-white text-black w-full placeholder-black p-2 border"
+              :class="{'border-red-500': errors['name.' + currentLanguageCode]}"
+              :placeholder="'Enter name in ' + (currentLanguageCode || 'language')"
+              :disabled="!currentLanguageCode"
+              required
           />
+          <p
+              v-if="currentLanguageCode && errors['source.' + currentLanguageCode]"
+              class="text-red-500 text-sm mt-1"
+          >
+            {{ errors['source.' + currentLanguageCode][0] }}
+          </p>
         </div>
         <div class="flex justify-center gap-4">
           <button
@@ -35,7 +53,7 @@
 </template>
 <script setup>
 import { useRouter, useRoute } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import {ref, onMounted, watch} from 'vue';
 
 definePageMeta({
   layout: 'navbar',
@@ -44,11 +62,17 @@ definePageMeta({
 const router = useRouter();
 const route = useRoute();
 const toast = useToast();
+const isLanguagesLoading = ref(true);
+const errors = ref({});
+const loading = ref(false);
+const currentLanguageCode = ref('');
+const languages = ref([]);
 const topic = ref({
-  name: "",
+  language_id: '',
+  name: {},
 });
 
-const getTopcis = async () => {
+const getTopics = async () => {
   try {
     const response = await $fetch(`/api/topics/${route.params.id}`, {
       method: 'GET',
@@ -63,6 +87,58 @@ const getTopcis = async () => {
   }
 };
 
+const initializeLanguageFields = () => {
+  languages.value.forEach((language) => {
+    if (!topic.value.name[language.code]) {
+      topic.value.name[language.code] = topic.value.name[language.code] || '';
+    }
+  });
+};
+
+
+watch(
+    () => topic.value.language_id,
+    (newLanguageId) => {
+      console.log('newLanguageId', newLanguageId)
+      console.log('newLanguageIdsddddddd', newLanguageId.value)
+      console.log('languages', languages.value)
+      const selectedLanguage = languages.value.find((lang) => lang.value === newLanguageId.value);
+      console.log('selectedLanguage', selectedLanguage)
+      currentLanguageCode.value = selectedLanguage ? selectedLanguage.code : '';
+      errors.value = {};
+
+      if (selectedLanguage && !topic.value.name[selectedLanguage.code]) {
+        topic.value.name[selectedLanguage.code] = '';
+      }
+    }
+);
+
+const fetchLanguages = async () => {
+  try {
+    const response = await fetch('/api/languages/');
+    if (!response.ok) {
+      throw new Error('Failed to fetch languages');
+    }
+    const result = await response.json();
+    languages.value = result.data.map((element) => ({
+      label: element.name,
+      value: element.id,
+      code: element.code,
+    }));
+    initializeLanguageFields();
+  } catch (error) {
+    console.error('Error fetching languages:', error);
+    toast.add({
+      title: 'Error!',
+      description: 'Failed to load languages.',
+      color: 'red',
+      timeout: 3000,
+    });
+  } finally {
+    isLanguagesLoading.value = false;
+  }
+};
+
 
 const cancelEdit = () => {
   router.push('/topics');
@@ -70,6 +146,30 @@ const cancelEdit = () => {
 
 const saveChanges = async () => {
   try {
+    loading.value = true;
+    errors.value = {};
+    if (!topic.value.language_id) {
+      errors.value['language_id'] = ['Language ID is required'];
+    }
+    const languageCodes = languages.value.map((lang) => lang.code);
+    let hasValidLanguage = false;
+    languageCodes.forEach((code) => {
+      if (topic.value.name[code]) {
+        hasValidLanguage = true;
+      }
+    });
+    if (!hasValidLanguage) {
+      errors.value['name'] = ['At least one language must have a valid name'];
+    }
+    if (Object.keys(errors.value).length > 0) {
+      toast.add({
+        title: 'Validation Error!',
+        description: 'Please fill out all required fields.',
+        color: 'red',
+        timeout: 3000,
+      });
+      return;
+    }
     const response = await fetch(`/api/topics/${route.params.id}`, {
       method: 'PUT',
       headers: {
@@ -77,34 +177,37 @@ const saveChanges = async () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        language_id: topic.value.language_id,
         name: topic.value.name,
       }),
     });
     const data = await response.json();
-    if (response.ok) {
-      toast.add({
-        title: 'Success!',
-        description: 'Topic updated successfully.',
-        color: 'blue',
-        timeout: 3000,
-      });
-      await router.push('/topics');
-    } else {
-      throw new Error(data.message || 'Failed to update topic');
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to update the topic.');
     }
+    toast.add({
+      title: 'Success!',
+      description: 'Topic updated successfully.',
+      color: 'blue',
+      timeout: 3000,
+    });
+    await router.push('/topics');
   } catch (error) {
+    console.error('Error saving changes:', error);
     toast.add({
       title: 'Error!',
-      description: error.message || 'Failed to update topic',
+      description: error.message || 'Failed to update the Topic.',
       color: 'red',
       timeout: 3000,
     });
+  } finally {
+    loading.value = false;
   }
 };
 
-
 onMounted(async () => {
   await nextTick();
-  await getTopcis();
+  await getTopics();
+  await fetchLanguages()
 });
 </script>

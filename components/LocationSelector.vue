@@ -24,7 +24,9 @@
   </div>
 </template>
 <script setup>
+import VueGoogleMaps from '@fawmi/vue-google-maps';
 import { ref, watch } from "vue";
+
 
 const emit = defineEmits(["update:modelValue"]);
 const props = defineProps({
@@ -35,7 +37,7 @@ const props = defineProps({
   modelValue: {
     type: Object,
     required: true,
-    default: () => ({ lat: 40.180438, lng: 44.488690 }),
+    default: () => ({ lat: 0, lng: 0 }),
     validator: (value) =>
         value &&
         typeof value.lat === "number" &&
@@ -55,9 +57,9 @@ const onInput = () => {
 }
 
 const onMarkerDragEnd = (event) => {
-  const lat = event.latLng.lat();
   const lng = event.latLng.lng();
-  updateMap({ lat, lng });
+  const lat = event.latLng.lat();
+  updateMap({ lng, lat });
 };
 
 const setPlace = (place) => {
@@ -66,6 +68,7 @@ const setPlace = (place) => {
       lat: place.geometry.location.lat(),
       lng: place.geometry.location.lng(),
     };
+    alert(JSON.stringify(location))
     updateMap(location);
   }
 };

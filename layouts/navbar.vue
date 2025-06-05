@@ -10,7 +10,7 @@
             class="w-6 h-6 mr-2 bg-no-repeat bg-center bg-contain"
             style="background-image: url('/images/home.svg')"
         ></span>
-        Home
+        Materials
       </nuxt-link>
 
       <nuxt-link
