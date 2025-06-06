@@ -11,7 +11,7 @@
           </label>
           <select
               v-model="material.topic_id"
-              class="bg-white text-black w-full p-2 border rounded-lg"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors['topic_id']}"
               required
               :disabled="isTopicsLoading"
@@ -27,6 +27,7 @@
               {{ topic.name.en }}
             </option>
           </select>
+
           <p v-if="errors['topic_id']" class="text-red-500 text-sm mt-1">
             {{ errors['topic_id'][0] }}
           </p>
@@ -40,7 +41,7 @@
           </label>
           <select
               v-model="material.country_id"
-              class="bg-white text-black w-full p-2 border rounded-lg"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors['country_id']}"
               required
               :disabled="isCountriesLoading"
@@ -69,14 +70,13 @@
           </label>
           <input
               v-model="material.poster"
-              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-lg"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors.poster}"
               placeholder="Enter poster"
               maxlength="255"
           />
           <p v-if="errors.poster" class="text-red-500 text-sm mt-1">{{ errors.poster[0] }}</p>
         </div>
-
         <div class="mb-4">
           <label for="start_year" class="block text-sm font-medium text-gray-700 mb-2">
             Start Year <span class="text-red-500">*</span>
@@ -84,7 +84,7 @@
           <input
               type="number"
               v-model="material.start_year"
-              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-lg"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors.start_year}"
               placeholder="Enter start year"
               required
@@ -98,7 +98,7 @@
           <input
               type="number"
               v-model="material.end_year"
-              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-lg"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors.end_year}"
               placeholder="Enter end year"
               required
@@ -111,7 +111,7 @@
           </label>
           <select
               v-model="material.medium"
-              class="bg-white text-black w-full p-2 border rounded-lg"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors['medium']}"
               required
               :disabled="isMediumsLoading"
@@ -131,7 +131,6 @@
             {{ errors['medium'][0] }}
           </p>
         </div>
-
         <div class="mb-4">
           <label for="tags" class="block text-sm font-medium text-gray-700 mb-2">
             Tags ID
@@ -145,7 +144,7 @@
                 option-attribute="label"
                 value-attribute="value"
                 placeholder="Select Tags"
-                class="h-[60px] text-black"
+                class="text-black"
             />
             <div
                 v-if="!isTagsLoading && tags.length === 0"
@@ -175,7 +174,7 @@
           <input
               v-model="material.book_url"
               type="url"
-              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-lg"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors.book_url}"
               placeholder="Enter book URL"
               required
@@ -189,7 +188,7 @@
           <input
               v-model="material.video"
               type="url"
-              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-lg"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors.video}"
               placeholder="Enter video URL"
               required
@@ -203,7 +202,7 @@
           <input
               v-model="material.source_url"
               type="url"
-              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-lg"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors.source_url}"
               placeholder="Enter source URL"
               required
@@ -217,7 +216,7 @@
           <input
               v-model="material.author_url"
               type="url"
-              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-lg"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors.author_url}"
               placeholder="Enter author URL"
               required
@@ -269,7 +268,7 @@
             </label>
             <input
                 v-model="material.title[currentLanguageCode]"
-                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg"
+                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
                 :class="{'border-red-500': errors['title.' + currentLanguageCode]}"
                 :placeholder="'Enter title in ' + (currentLanguageCode || 'language')"
                 :disabled="!currentLanguageCode"
@@ -286,7 +285,7 @@
             </label>
             <input
                 v-model="material.author[currentLanguageCode]"
-                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg"
+                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
                 :class="{'border-red-500': errors['author.' + currentLanguageCode]}"
                 :placeholder="'Enter author in ' + (currentLanguageCode || 'language')"
                 :disabled="!currentLanguageCode"
@@ -303,7 +302,7 @@
             </label>
             <input
                 v-model="material.short_description[currentLanguageCode]"
-                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg"
+                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
                 :class="{'border-red-500': errors['short_description.' + currentLanguageCode]}"
                 :placeholder="'Enter short description in ' + (currentLanguageCode || 'language')"
                 :disabled="!currentLanguageCode"
@@ -318,9 +317,9 @@
             <label for="full_text" class="block text-sm font-medium text-gray-700 mb-2">
               Full Text ({{ currentLanguageCode || 'Select a language' }}) <span class="text-red-500">*</span>
             </label>
-            <input
+            <textarea
                 v-model="material.full_text[currentLanguageCode]"
-                class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-lg"
+                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
                 :class="{'border-red-500': errors['full_text.' + currentLanguageCode]}"
                 :placeholder="'Enter full text in ' + (currentLanguageCode || 'language')"
                 :disabled="!currentLanguageCode"
@@ -337,7 +336,7 @@
             </label>
             <input
                 v-model="material.source[currentLanguageCode]"
-                class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-lg"
+                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
                 :class="{'border-red-500': errors['source.' + currentLanguageCode]}"
                 :placeholder="'Enter source in ' + (currentLanguageCode || 'language')"
                 :disabled="!currentLanguageCode"
@@ -369,7 +368,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import {ref, onMounted, watch, computed, toRaw} from 'vue';
 import {useRouter} from 'vue-router';
@@ -420,7 +418,6 @@ const markerPosition = ref({
   lng: material.value.location.coordinates[1],
 });
 
-
 const markerOptions = ref({
   position: markerPosition.value,
   draggable: true,
@@ -448,8 +445,6 @@ const initializeLanguageFields = () => {
 watch(() => material.value.language_id, (newLanguageId) => {
   const selectedLanguage = languages.value.find(lang => lang.value === newLanguageId);
   currentLanguageCode.value = selectedLanguage ? selectedLanguage.code : '';
-
-
 });
 
 const fetchLanguages = async () => {
@@ -529,8 +524,6 @@ const fetchTags = async () => {
       label: tag.name.en,
       value: tag.id,
     }));
-    console.log()
-    console.log(tags.value)
   } catch (error) {
     console.error('Error fetching tags:', error);
     toast.add({
@@ -574,70 +567,11 @@ const validateUrl = (url) => {
   }
 };
 
-const submitLanguage = async () => {
-  if (!currentLanguageCode.value) {
-    toast.add({
-      title: 'Error!',
-      description: 'Please select a language first.',
-      color: 'red',
-      timeout: 3000,
-    });
-    return false;
-  }
-
-  const languageFields = {
-    title: material.value.title[currentLanguageCode.value],
-    author: material.value.author[currentLanguageCode.value],
-    short_description: material.value.short_description[currentLanguageCode.value],
-    full_text: material.value.full_text[currentLanguageCode.value],
-    source: material.value.source[currentLanguageCode.value],
-  };
-
-  const newErrors = {};
-  if (!languageFields.title) newErrors['title.' + currentLanguageCode.value] = ['Title is required'];
-  else if (languageFields.title.length > 255) newErrors['title.' + currentLanguageCode.value] = ['Title must not exceed 255 characters'];
-
-  if (!languageFields.author) newErrors['author.' + currentLanguageCode.value] = ['Author is required'];
-  else if (languageFields.author.length > 255) newErrors['author.' + currentLanguageCode.value] = ['Author must not exceed 255 characters'];
-
-  if (!languageFields.short_description) newErrors['short_description.' + currentLanguageCode.value] = ['Short description is required'];
-  else if (languageFields.short_description.length > 255) newErrors['short_description.' + currentLanguageCode.value] = ['Short description must not exceed 255 characters'];
-
-  if (!languageFields.full_text) newErrors['full_text.' + currentLanguageCode.value] = ['Full text is required'];
-  else if (languageFields.full_text.length > 255) newErrors['full_text.' + currentLanguageCode.value] = ['Full text must not exceed 255 characters'];
-
-  if (!languageFields.source) newErrors['source.' + currentLanguageCode.value] = ['Source is required'];
-  else if (languageFields.source.length > 255) newErrors['source.' + currentLanguageCode.value] = ['Source must not exceed 255 characters'];
-
-  if (Object.keys(newErrors).length > 0) {
-    errors.value = {...errors.value, ...newErrors};
-    toast.add({
-      title: 'Error!',
-      description: 'Please fill in all required fields for the selected language.',
-      color: 'red',
-      timeout: 3000,
-    });
-    return false;
-  }
-
-  toast.add({
-    title: 'Success!',
-    description: `Fields for ${currentLanguageCode.value} saved locally. Select another language or save the material.`,
-    color: 'green',
-    timeout: 3000,
-  });
-  return true;
-};
-
 const createMaterial = async () => {
   try {
-    console.log('Payload:', JSON.stringify(toRaw(material.value), null, 2));
-    console.log(material.value)
     loading.value = true;
     errors.value = {};
-
     const newErrors = {};
-
     if (!material.value.language_id) newErrors.language_id = ['Language ID is required'];
     if (!material.value.topic_id) newErrors.topic_id = ['Topic ID is required'];
     if (!material.value.country_id) newErrors.country_id = ['Country ID is required'];

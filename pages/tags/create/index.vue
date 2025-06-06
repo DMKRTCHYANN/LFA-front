@@ -28,7 +28,7 @@
           </label>
           <input
               v-model="tag.name[currentLanguageCode]"
-              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors['name.' + currentLanguageCode]}"
               :placeholder="'Enter name in ' + currentLanguageCode"
               required
@@ -162,7 +162,7 @@ const createTags = async () => {
         errors.value = data.errors;
         toast.add({
           title: 'Error!',
-          description: 'Validation failed. Please check the form.',
+          description: errors.value,
           color: 'red',
           timeout: 3000,
         });

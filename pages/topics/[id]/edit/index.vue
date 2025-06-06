@@ -20,7 +20,7 @@
           </label>
           <input
               v-model="topic.name[currentLanguageCode]"
-              class="bg-white text-black w-full placeholder-black p-2 border"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors['name.' + currentLanguageCode]}"
               :placeholder="'Enter name in ' + (currentLanguageCode || 'language')"
               :disabled="!currentLanguageCode"
@@ -99,11 +99,7 @@ const initializeLanguageFields = () => {
 watch(
     () => topic.value.language_id,
     (newLanguageId) => {
-      console.log('newLanguageId', newLanguageId)
-      console.log('newLanguageIdsddddddd', newLanguageId.value)
-      console.log('languages', languages.value)
       const selectedLanguage = languages.value.find((lang) => lang.value === newLanguageId.value);
-      console.log('selectedLanguage', selectedLanguage)
       currentLanguageCode.value = selectedLanguage ? selectedLanguage.code : '';
       errors.value = {};
 

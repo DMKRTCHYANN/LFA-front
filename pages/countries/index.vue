@@ -49,7 +49,6 @@ const columns = [
   { key: 'actions', label: 'Actions' },
 ]
 
-
 const getCountries = async () => {
   try {
     const { data } = await useFetch("/api/countries",)

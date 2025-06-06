@@ -12,7 +12,7 @@
           <input
               id="name"
               v-model="country.name.en"
-              class="bg-white text-black w-full p-2 border"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
           />
         </div>
         <div class="flex justify-center gap-4">
@@ -34,8 +34,8 @@
   </div>
 </template>
 <script setup>
-import { useRouter, useRoute } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import {useRouter, useRoute} from 'vue-router';
+import {ref, onMounted} from 'vue';
 
 definePageMeta({
   layout: 'navbar',
@@ -62,7 +62,6 @@ const getCountries = async () => {
     console.error('Error loading language:', err);
   }
 };
-
 
 const cancelEdit = () => {
   router.push('/countries');
@@ -101,7 +100,6 @@ const saveChanges = async () => {
     });
   }
 };
-
 
 onMounted(async () => {
   await nextTick();

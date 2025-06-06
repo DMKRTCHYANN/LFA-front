@@ -11,7 +11,7 @@
           </label>
           <input
               v-model="languages.name"
-              class="bg-white text-black w-full p-2 border"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': !languages.name && errors.name}"
               required
           />
@@ -23,7 +23,7 @@
           </label>
           <input
               v-model="languages.code"
-              class="bg-white text-black w-full p-2 border"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': !languages.code && errors.name}"
               required
           />
@@ -110,7 +110,6 @@ const createLanguages = async () => {
   try {
     loading.value = true;
     errors.value = {};
-
     const formData = new FormData();
     formData.append('name', languages.value.name);
     formData.append('code', languages.value.code);
@@ -124,7 +123,6 @@ const createLanguages = async () => {
         Accept: 'application/json',
       },
     });
-
     if (!response.ok) {
       const data = await response.json();
       if (data.errors) {
@@ -154,5 +152,4 @@ const createLanguages = async () => {
     loading.value = false;
   }
 };
-
 </script>

@@ -11,7 +11,7 @@
           </label>
           <select
               v-model="material.topic_id"
-              class="bg-white text-black w-full p-2 border rounded-md"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors['topic_id']}"
               required
               :disabled="isTopicsLoading"
@@ -40,7 +40,7 @@
           </label>
           <select
               v-model="material.country_id"
-              class="bg-white text-black w-full p-2 border rounded-md"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors['country_id']}"
               required
               :disabled="isCountriesLoading"
@@ -69,7 +69,7 @@
           </label>
           <input
               v-model="material.poster"
-              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors.poster}"
               placeholder="Enter poster URL"
           />
@@ -83,7 +83,7 @@
           <input
               type="number"
               v-model="material.start_year"
-              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': !material.start_year && errors.start_year}"
               placeholder="Enter start year"
               required
@@ -97,7 +97,7 @@
           <input
               type="number"
               v-model="material.end_year"
-              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': !material.end_year && errors.end_year}"
               placeholder="Enter end year"
               required
@@ -110,7 +110,7 @@
           </label>
           <select
               v-model="material.medium"
-              class="bg-white text-black w-full p-2 border rounded-md"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors['medium']}"
               required
               :disabled="isMediumsLoading"
@@ -183,14 +183,13 @@
             </div>
           </div>
         </div>
-
         <div class="mb-4">
           <label for="book_url" class="block text-sm font-medium text-gray-700 mb-2">
             Book URL <span class="text-red-500">*</span>
           </label>
           <input
               v-model="material.book_url"
-              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': !material.book_url && errors.book_url}"
               placeholder="Enter book URL"
               required
@@ -203,7 +202,7 @@
           </label>
           <input
               v-model="material.video"
-              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': !material.video && errors.video}"
               placeholder="Enter video URL"
               required
@@ -216,7 +215,7 @@
           </label>
           <input
               v-model="material.source_url"
-              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': !material.source_url && errors.source_url}"
               placeholder="Enter source URL"
               required
@@ -229,7 +228,7 @@
           </label>
           <input
               v-model="material.author_url"
-              class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': !material.author_url && errors.author_url}"
               placeholder="Enter author URL"
               required
@@ -237,7 +236,6 @@
           <p v-if="errors.author_url" class="text-red-500 text-sm mt-1">{{ errors.author_url[0] }}</p>
         </div>
         <div class="mb-6">
-          {{material.location}}
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Select Location <span class="text-red-500">*</span>
           </label>
@@ -279,7 +277,7 @@
             </label>
             <input
                 v-model="material.title[currentLanguageCode]"
-                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-md"
+                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
                 :class="{'border-red-500': errors['title.' + currentLanguageCode]}"
                 :placeholder="'Enter title in ' + currentLanguageCode"
                 :disabled="!currentLanguageCode"
@@ -295,7 +293,7 @@
             </label>
             <input
                 v-model="material.author[currentLanguageCode]"
-                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-md"
+                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
                 :class="{'border-red-500': errors['author.' + currentLanguageCode]}"
                 :placeholder="'Enter author in ' + currentLanguageCode"
                 :disabled="!currentLanguageCode"
@@ -311,7 +309,7 @@
             </label>
             <input
                 v-model="material.short_description[currentLanguageCode]"
-                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-md"
+                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
                 :class="{'border-red-500': errors['short_description.' + currentLanguageCode]}"
                 :placeholder="'Enter short description in ' + currentLanguageCode"
                 :disabled="!currentLanguageCode"
@@ -327,7 +325,7 @@
             </label>
             <textarea
                 v-model="material.full_text[currentLanguageCode]"
-                class="bg-white text-black placeholder-gray-500 w-full p-2 border rounded-md"
+                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
                 :class="{'border-red-500': errors['full_text.' + currentLanguageCode]}"
                 :placeholder="'Enter full text in ' + currentLanguageCode"
                 :disabled="!currentLanguageCode"
@@ -344,7 +342,7 @@
             </label>
             <input
                 v-model="material.source[currentLanguageCode]"
-                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-md"
+                class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
                 :class="{'border-red-500': errors['source.' + currentLanguageCode]}"
                 :placeholder="'Enter source in ' + currentLanguageCode"
                 :disabled="!currentLanguageCode"
@@ -376,9 +374,8 @@
   </div>
 </template>
 <script setup>
-import { Icon } from '@iconify/vue';
-import { ref, onMounted, watch, toRaw, computed, nextTick } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import {ref, onMounted, watch, toRaw, computed, nextTick} from 'vue';
+import {useRouter, useRoute} from 'vue-router';
 import LocationSelector from '~/components/LocationSelector.vue';
 
 definePageMeta({
@@ -419,7 +416,7 @@ const material = ref({
   video: '',
   source_url: '',
   author_url: '',
-  location: { coordinates: [] },
+  location: {coordinates: []},
 });
 
 const markerPosition = ref({
@@ -439,7 +436,7 @@ watch(
         material.value.location.coordinates = [newPosition.lng, newPosition.lat];
       }
     },
-    { deep: true }
+    {deep: true}
 );
 
 const initializeLanguageFields = () => {
@@ -580,12 +577,10 @@ const getMaterial = async () => {
     if (!response.ok) {
       throw new Error('Failed to fetch material');
     }
-
     const result = await response.json();
     if (!result) {
       throw new Error('Invalid data structure');
     }
-
     const data = result;
     material.value = {
       language_id: String(data.language_id || ''),
@@ -605,22 +600,19 @@ const getMaterial = async () => {
       video: data.video || '',
       source_url: data.source_url || '',
       author_url: data.author_url || '',
-      location: data.location || { coordinates: [0, 0] },
+      location: data.location || {coordinates: [0, 0]},
     };
-
     if (data.location?.coordinates?.length === 2) {
       const [lng, lat] = data.location.coordinates;
-      markerPosition.value = { lng, lat };
+      markerPosition.value = {lng, lat};
       markerOptions.value.position = markerPosition.value;
     }
-
     if (languages.value.length) {
       const selectedLanguage = languages.value.find(
           (lang) => lang.value === String(data.language_id)
       );
       currentLanguageCode.value = selectedLanguage ? selectedLanguage.code : '';
     }
-
     initializeLanguageFields();
   } catch (error) {
     console.error('Error fetching material:', error);
@@ -643,7 +635,6 @@ const submitLanguage = async () => {
     });
     return;
   }
-
   const languageFields = {
     title: material.value.title[currentLanguageCode.value],
     author: material.value.author[currentLanguageCode.value],
@@ -651,7 +642,6 @@ const submitLanguage = async () => {
     full_text: material.value.full_text[currentLanguageCode.value],
     source: material.value.source[currentLanguageCode.value],
   };
-
   const newErrors = {};
   if (!languageFields.title) newErrors['title.' + currentLanguageCode.value] = ['Title is required'];
   if (!languageFields.author) newErrors['author.' + currentLanguageCode.value] = ['Author is required'];
@@ -659,7 +649,6 @@ const submitLanguage = async () => {
     newErrors['short_description.' + currentLanguageCode.value] = ['Short description is required'];
   if (!languageFields.full_text) newErrors['full_text.' + currentLanguageCode.value] = ['Full text is required'];
   if (!languageFields.source) newErrors['source.' + currentLanguageCode.value] = ['Source is required'];
-
   if (Object.keys(newErrors).length > 0) {
     errors.value = newErrors;
     toast.add({
@@ -670,7 +659,6 @@ const submitLanguage = async () => {
     });
     return;
   }
-
   toast.add({
     title: 'Success!',
     description: `Fields for ${currentLanguageCode.value} saved locally. Select another language or save the material.`,
@@ -734,7 +722,6 @@ const updateMaterial = async () => {
       return;
     }
     const payload = toRaw(material.value);
-    console.log('Sending payload:', JSON.stringify(payload, null, 2));
     payload.location = {
       type: 'Point',
       coordinates: payload.location.coordinates,

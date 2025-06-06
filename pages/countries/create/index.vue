@@ -12,7 +12,7 @@
           <input
               id="name"
               v-model="country.name.en"
-              class="bg-white text-black w-full p-2 border"
+              class="bg-white text-black w-full placeholder-gray-500 p-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"
               :class="{'border-red-500': errors['name.en']}"
               required
           />
@@ -40,10 +40,9 @@
     </div>
   </div>
 </template>
-
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import {ref} from 'vue';
+import {useRouter} from 'vue-router';
 
 definePageMeta({
   layout: 'navbar',
@@ -63,7 +62,6 @@ const createCountry = async () => {
   try {
     loading.value = true;
     errors.value = {};
-
     const response = await fetch('/api/countries/', {
       method: 'POST',
       headers: {
@@ -74,7 +72,6 @@ const createCountry = async () => {
         name: country.value.name,
       }),
     });
-
     if (!response.ok) {
       const data = await response.json();
       if (data.errors) {
