@@ -1,26 +1,26 @@
 <template>
   <div>
-      <GMapMap
-          :center="center"
-          :api-key="apiKey"
-          :zoom="12"
-          style="width: 100%; height: 500px;"
-      >
-        <GMapMarker
-            :position="markerPosition"
-            :draggable="true"
-            @dragend="onMarkerDragEnd"
+    <GMapMap
+        :center="center"
+        :api-key="apiKey"
+        :zoom="12"
+        style="width: 100%; height: 500px;"
+    >
+      <GMapMarker
+          :position="markerPosition"
+          :draggable="true"
+          @dragend="onMarkerDragEnd"
+      />
+      <div class="search-input-container">
+        <GMapAutocomplete
+            ref="autocomplete"
+            placeholder="Search a location"
+            @input="onInput"
+            @place_changed="setPlace"
+            class="google-search-input"
         />
-        <div class="search-input-container">
-          <GMapAutocomplete
-              ref="autocomplete"
-              placeholder="Search a location"
-              @input="onInput"
-              @place_changed="setPlace"
-              class="google-search-input"
-          />
-        </div>
-      </GMapMap>
+      </div>
+    </GMapMap>
   </div>
 </template>
 <script setup>

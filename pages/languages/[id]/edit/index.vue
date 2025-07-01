@@ -49,7 +49,7 @@
                 class="max-h-40 object-contain mt-4"
             />
           </div>
-          <p class="text-black p-[10px]">Use only JPEG, PNG, JPG, GIF</p>
+          <p class="text-black p-[10px]">Use only JPEG, PNG, JPG</p>
         </div>
         <div class="flex justify-center gap-4">
           <button

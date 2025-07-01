@@ -3,6 +3,7 @@
     <div class="w-full bg-white rounded-lg max-w-[1500px] shadow-lg mb-[30px]">
       <div class="bg-blue-600 rounded-t-lg">
         <h1 class="text-xl text-white p-4">Create Material</h1>
+        {{ material }}
       </div>
       <div class="p-4">
         <div class="mb-4">
@@ -223,6 +224,36 @@
           />
           <p v-if="errors.author_url" class="text-red-500 text-sm mt-1">{{ errors.author_url[0] }}</p>
         </div>
+
+
+        <div class="mb-6">
+          <label for="file" class="block text-sm font-medium text-gray-700 mb-2">
+            Upload Image
+          </label>
+          <div
+              class="relative border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer"
+          >
+            <input
+                type="file"
+                accept="image/*"
+                @change="handleFileChange"
+                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            >
+            <div v-if="!imagePreview && !material.image" class="text-gray-500 text-sm text-center">
+              Drag and drop an image or click to select
+            </div>
+            <img
+                v-if="imagePreview"
+                :src="imagePreview"
+                alt="Image Preview"
+                class="max-h-40 object-contain mt-4"
+            >
+          </div>
+          <p class="text-black p-[10px]">Use only JPEG, PNG, JPG</p>
+          <p v-if="errors.image" class="text-red-500 text-sm mt-1">{{ errors.image[0] }}</p>
+        </div>
+
+
         <div class="mb-6">
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Select Location <span class="text-red-500">*</span>
@@ -238,6 +269,23 @@
           </p>
           <p v-if="errors['location.coordinates.1']" class="text-red-500 text-sm mt-1">
             {{ errors['location.coordinates.1'][0] }}
+          </p>
+        </div>
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Select Author Location <span class="text-red-500">*</span>
+          </label>
+          <LocationSelector
+              :api-key="$config.public.googleMapsApiKey"
+              v-model="author_location"
+              style="height: 500px; width: 100%; position: relative"
+          />
+          <p v-if="errors['location']" class="text-red-500 text-sm mt-1">{{ errors['author_location'][0] }}</p>
+          <p v-if="errors['location.coordinates.0']" class="text-red-500 text-sm mt-1">
+            {{ errors['author_location.coordinates.0'][0] }}
+          </p>
+          <p v-if="errors['location.coordinates.1']" class="text-red-500 text-sm mt-1">
+            {{ errors['author_location.coordinates.1'][0] }}
           </p>
         </div>
       </div>
@@ -386,6 +434,7 @@ const isTagsLoading = ref(true);
 const isCountriesLoading = ref(true);
 const isMediumsLoading = ref(true);
 const errors = ref({});
+const imagePreview = ref(null);
 const languages = ref([]);
 const topics = ref([]);
 const tags = ref([]);
@@ -405,12 +454,14 @@ const material = ref({
   start_year: '',
   end_year: '',
   medium: '',
+  image: null,
   tags: [],
   book_url: '',
   video: '',
   source_url: '',
   author_url: '',
   location: {coordinates: [40.180438, 44.488690]},
+  author_location: {coordinates: [40.180438, 44.488690]},
 });
 
 const markerPosition = ref({
@@ -418,8 +469,18 @@ const markerPosition = ref({
   lng: material.value.location.coordinates[1],
 });
 
+const authorMarkerPosition = ref({
+  lat: material.value.author_location.coordinates[0],
+  lng: material.value.author_location.coordinates[1],
+});
+
 const markerOptions = ref({
   position: markerPosition.value,
+  draggable: true,
+});
+
+const authorMarkerOptions = ref({
+  position: authorMarkerPosition.value,
   draggable: true,
 });
 
@@ -428,7 +489,21 @@ const location = computed({
     lat: material.value.location.coordinates[0],
     lng: material.value.location.coordinates[1],
   }),
+  set: (newLocation) => {
+    material.value.location.coordinates = [newLocation.lat, newLocation.lng];
+  },
 });
+
+const author_location = computed({
+  get: () => ({
+    lat: material.value.author_location.coordinates[0],
+    lng: material.value.author_location.coordinates[1],
+  }),
+  set: (newLocation) => {
+    material.value.author_location.coordinates = [newLocation.lat, newLocation.lng];
+  },
+});
+
 
 const initializeLanguageFields = () => {
   languages.value.forEach((language) => {
@@ -440,6 +515,20 @@ const initializeLanguageFields = () => {
       material.value.source[language.code] = '';
     }
   });
+};
+
+
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    material.value.image = file
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      imagePreview.value = e.target.result
+    };
+    reader.readAsDataURL(file);
+  }
 };
 
 watch(() => material.value.language_id, (newLanguageId) => {
@@ -571,76 +660,51 @@ const createMaterial = async () => {
   try {
     loading.value = true;
     errors.value = {};
-    const newErrors = {};
-    if (!material.value.language_id) newErrors.language_id = ['Language ID is required'];
-    if (!material.value.topic_id) newErrors.topic_id = ['Topic ID is required'];
-    if (!material.value.country_id) newErrors.country_id = ['Country ID is required'];
-    if (!material.value.start_year) newErrors.start_year = ['Start year is required'];
-    if (!material.value.end_year) newErrors.end_year = ['End year is required'];
-    if (!material.value.medium) newErrors.medium = ['Medium is required'];
-    if (!material.value.book_url) newErrors.book_url = ['Book URL is required'];
-    else if (!validateUrl(material.value.book_url)) newErrors.book_url = ['Invalid Book URL'];
+    const formData = new FormData();
+    formData.append('language_id', material.value.language_id);
+    formData.append('topic_id', material.value.topic_id);
+    formData.append('country_id', material.value.country_id);
+    formData.append('poster', material.value.poster);
+    formData.append('start_year', material.value.start_year);
+    formData.append('end_year', material.value.end_year);
+    formData.append('medium', material.value.medium);
+    formData.append('book_url', material.value.book_url);
+    formData.append('video', material.value.video);
+    formData.append('source_url', material.value.source_url);
+    formData.append('author_url', material.value.author_url);
 
-    if (!material.value.video) newErrors.video = ['Video URL is required'];
-    else if (!validateUrl(material.value.video)) newErrors.video = ['Invalid Video URL'];
+    material.value.tags.forEach(tag => {
+      formData.append('tags[]', tag);
+    });
 
-    if (!material.value.source_url) newErrors.source_url = ['Source URL is required'];
-    else if (!validateUrl(material.value.source_url)) newErrors.source_url = ['Invalid Source URL'];
+    formData.append('location[type]', 'Point');
+    formData.append('location[coordinates][0]', material.value.location.coordinates[0]);
+    formData.append('location[coordinates][1]', material.value.location.coordinates[1]);
 
-    if (!material.value.author_url) newErrors.author_url = ['Author URL is required'];
-    else if (!validateUrl(material.value.author_url)) newErrors.author_url = ['Invalid Author URL'];
+    formData.append('author_location[type]', 'Point');
+    formData.append('author_location[coordinates][0]', material.value.author_location.coordinates[0]);
+    formData.append('author_location[coordinates][1]', material.value.author_location.coordinates[1]);
 
-    if (material.value.poster && material.value.poster.length > 255) {
-      newErrors.poster = ['Poster must not exceed 255 characters'];
-    }
-
-    const languageCodes = languages.value.map(lang => lang.code);
-    let hasValidLanguage = false;
-    for (const code of languageCodes) {
-      if (
-          material.value.title[code] &&
-          material.value.author[code] &&
-          material.value.short_description[code] &&
-          material.value.full_text[code] &&
-          material.value.source[code]
-      ) {
-        hasValidLanguage = true;
-        break;
+    const appendLocalized = (prefix, obj) => {
+      for (const [lang, value] of Object.entries(obj)) {
+        formData.append(`${prefix}[${lang}]`, value);
       }
-    }
-    if (!hasValidLanguage) {
-      newErrors.language_fields = ['At least one language must have all fields filled.'];
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      errors.value = newErrors;
-      toast.add({
-        title: 'Error!',
-        description: 'Please correct the errors in the form.',
-        color: 'red',
-        timeout: 3000,
-      });
-      return;
-    }
-
-    const payload = toRaw(material.value);
-    payload.location = {
-      type: 'Point',
-      coordinates: [
-        payload.location.coordinates[0],
-        payload.location.coordinates[1],
-      ],
     };
+
+    appendLocalized('title', material.value.title);
+    appendLocalized('author', material.value.author);
+    appendLocalized('short_description', material.value.short_description);
+    appendLocalized('full_text', material.value.full_text);
+    appendLocalized('source', material.value.source);
+
+    if (material.value.image) {
+      formData.append('image', material.value.image);
+    }
 
     const response = await fetch('/api/materials/', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify(payload),
+      body: formData,
     });
-
     if (!response.ok) {
       const data = await response.json();
       if (data.errors) {
@@ -685,5 +749,6 @@ onMounted(async () => {
     fetchMediums(),
   ]);
   markerOptions.value.position = markerPosition.value;
+  authorMarkerOptions.value.position = authorMarkerOptions.value;
 });
 </script>

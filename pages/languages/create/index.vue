@@ -52,7 +52,7 @@
                 class="max-h-40 object-contain mt-4"
             />
           </div>
-          <p class="text-black p-[10px]">Use only JPEG, PNG, JPG, GIF</p>
+          <p class="text-black p-[10px]">Use only JPEG, PNG, JPG</p>
           <p v-if="errors.image" class="text-red-500 text-sm mt-1">{{ errors.image[0] }}</p>
         </div>
         <div class="flex justify-center gap-4">

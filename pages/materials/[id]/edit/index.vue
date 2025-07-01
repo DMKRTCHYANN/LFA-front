@@ -236,6 +236,33 @@
           <p v-if="errors.author_url" class="text-red-500 text-sm mt-1">{{ errors.author_url[0] }}</p>
         </div>
         <div class="mb-6">
+          <label for="file" class="block text-sm font-medium text-gray-700 mb-2">
+            Upload Image
+          </label>
+          <div
+              class="relative border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer"
+          >
+            <input
+                id="file"
+                type="file"
+                accept="image/*"
+                class="absolute inset-0 opacity-0 cursor-pointer"
+                @change="onFileChange"
+            />
+            <div class="text-gray-500 text-sm text-center">
+              Drag and drop an image or click to select
+            </div>
+            <img
+                v-if="previewImage || material.image"
+                :src="previewImage || `http://localhost:8000/storage/${material.image}`"
+                alt="Material Image"
+                class="max-h-40 object-contain mt-4"
+            />
+          </div>
+          <p class="text-black p-[10px]">Use only JPEG, PNG, JPG</p>
+        </div>
+        {{material.image}}
+        <div class="mb-6">
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Select Location <span class="text-red-500">*</span>
           </label>
@@ -246,6 +273,19 @@
           />
           <p v-if="errors['location']" class="text-red-500 text-sm mt-1">
             {{ errors['location'][0] }}
+          </p>
+        </div>
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Select Author Location <span class="text-red-500">*</span>
+          </label>
+          <LocationSelector
+              :api-key="$config.public.googleMapsApiKey"
+              v-model="author_location"
+              style="height: 500px; width: 100%; position: relative"
+          />
+          <p v-if="errors['author_location']" class="text-red-500 text-sm mt-1">
+            {{ errors['author_location'][0] }}
           </p>
         </div>
       </div>
@@ -393,8 +433,10 @@ const isCountriesLoading = ref(true);
 const isMediumsLoading = ref(true);
 const errors = ref({});
 const languages = ref([]);
+const previewImage = ref(null);
 const topics = ref([]);
 const tags = ref([]);
+const selectedFile = ref(null);
 const countries = ref([]);
 const mediums = ref([]);
 const currentLanguageCode = ref('');
@@ -412,11 +454,13 @@ const material = ref({
   end_year: '',
   medium: '',
   tags: [],
+  image: null,
   book_url: '',
   video: '',
   source_url: '',
   author_url: '',
   location: {coordinates: []},
+  author_location: {coordinates: []},
 });
 
 const markerPosition = ref({
@@ -433,11 +477,49 @@ watch(
     markerPosition,
     (newPosition) => {
       if (newPosition) {
-        material.value.location.coordinates = [newPosition.lng, newPosition.lat];
+        material.value.location.coordinates = [newPosition.lat, newPosition.lng];
       }
     },
     {deep: true}
 );
+
+
+const authorMarkerPosition = ref({
+  lat: material.value.author_location.coordinates[1] || 0,
+  lng: material.value.author_location.coordinates[0] || 0,
+});
+
+const authorMarkerOptions = ref({
+  position: authorMarkerPosition.value,
+  draggable: true,
+});
+
+
+watch(
+    authorMarkerPosition,
+    (newPosition) => {
+      if (newPosition) {
+        material.value.author_location.coordinates = [newPosition.lat, newPosition.lng];
+      }
+    },
+    {deep: true}
+);
+
+
+const onFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    selectedFile.value = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImage.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    selectedFile.value = null;
+    previewImage.value = null;
+  }
+};
 
 const initializeLanguageFields = () => {
   languages.value.forEach((language) => {
@@ -601,11 +683,17 @@ const getMaterial = async () => {
       source_url: data.source_url || '',
       author_url: data.author_url || '',
       location: data.location || {coordinates: [0, 0]},
+      author_location: data.author_location || {coordinates: [0, 0]},
     };
     if (data.location?.coordinates?.length === 2) {
       const [lng, lat] = data.location.coordinates;
       markerPosition.value = {lng, lat};
       markerOptions.value.position = markerPosition.value;
+    }
+    if (data.author_location?.coordinates?.length === 2) {
+      const [lng, lat] = data.author_location.coordinates;
+      authorMarkerPosition.value = {lng, lat};
+      authorMarkerOptions.value.position = authorMarkerPosition.value;
     }
     if (languages.value.length) {
       const selectedLanguage = languages.value.find(
@@ -625,48 +713,6 @@ const getMaterial = async () => {
   }
 };
 
-const submitLanguage = async () => {
-  if (!currentLanguageCode.value) {
-    toast.add({
-      title: 'Error!',
-      description: 'Please select a language first.',
-      color: 'red',
-      timeout: 3000,
-    });
-    return;
-  }
-  const languageFields = {
-    title: material.value.title[currentLanguageCode.value],
-    author: material.value.author[currentLanguageCode.value],
-    short_description: material.value.short_description[currentLanguageCode.value],
-    full_text: material.value.full_text[currentLanguageCode.value],
-    source: material.value.source[currentLanguageCode.value],
-  };
-  const newErrors = {};
-  if (!languageFields.title) newErrors['title.' + currentLanguageCode.value] = ['Title is required'];
-  if (!languageFields.author) newErrors['author.' + currentLanguageCode.value] = ['Author is required'];
-  if (!languageFields.short_description)
-    newErrors['short_description.' + currentLanguageCode.value] = ['Short description is required'];
-  if (!languageFields.full_text) newErrors['full_text.' + currentLanguageCode.value] = ['Full text is required'];
-  if (!languageFields.source) newErrors['source.' + currentLanguageCode.value] = ['Source is required'];
-  if (Object.keys(newErrors).length > 0) {
-    errors.value = newErrors;
-    toast.add({
-      title: 'Error!',
-      description: 'Please fill in all required fields for the selected language.',
-      color: 'red',
-      timeout: 3000,
-    });
-    return;
-  }
-  toast.add({
-    title: 'Success!',
-    description: `Fields for ${currentLanguageCode.value} saved locally. Select another language or save the material.`,
-    color: 'green',
-    timeout: 3000,
-  });
-};
-
 const location = computed({
   get: () => ({
     lat: material.value.location.coordinates[0] || 0,
@@ -677,40 +723,181 @@ const location = computed({
   },
 });
 
+const author_location = computed({
+  get: () => ({
+    lat: material.value.author_location.coordinates[0] || 0,
+    lng: material.value.author_location.coordinates[1] || 0,
+  }),
+  set: (newLocation) => {
+    material.value.author_location.coordinates = [newLocation.lat, newLocation.lng];
+  },
+});
+
+
+// const updateMaterial = async () => {
+//   try {
+//     loading.value = true;
+//     errors.value = {};
+//     const newErrors = {};
+//     if (!material.value.language_id) newErrors['language_id'] = ['Language ID is required'];
+//     if (!material.value.topic_id) newErrors['topic_id'] = ['Topic ID is required'];
+//     if (!material.value.country_id) newErrors['country_id'] = ['Country ID is required'];
+//     if (!material.value.start_year) newErrors['start_year'] = ['Start year is required'];
+//     if (!material.value.end_year) newErrors['end_year'] = ['End year is required'];
+//     if (!material.value.medium) newErrors['medium'] = ['Medium is required'];
+//     if (!material.value.book_url) newErrors['book_url'] = ['Book URL is required'];
+//     if (!material.value.video) newErrors['video'] = ['Video URL is required'];
+//     if (!material.value.source_url) newErrors['source_url'] = ['Source URL is required'];
+//     if (!material.value.author_url) newErrors['author_url'] = ['Author URL is required'];
+//     if (!material.value.location.coordinates.length)
+//       newErrors['location'] = ['Location coordinates are required'];
+//     const languageCodes = languages.value.map((lang) => lang.code);
+//     let hasValidLanguage = false;
+//     for (const code of languageCodes) {
+//       if (
+//           material.value.title[code] &&
+//           material.value.author[code] &&
+//           material.value.short_description[code] &&
+//           material.value.full_text[code] &&
+//           material.value.source[code]
+//       ) {
+//         hasValidLanguage = true;
+//         break;
+//       }
+//     }
+//     if (!hasValidLanguage) {
+//       newErrors['language_fields'] = ['At least one language must have all fields filled'];
+//     }
+//     if (Object.keys(newErrors).length > 0) {
+//       errors.value = newErrors;
+//       toast.add({
+//         title: 'Error!',
+//         description: 'Please fill in all required fields.',
+//         color: 'red',
+//         timeout: 3000,
+//       });
+//       return;
+//     }
+//     const payload = toRaw(material.value);
+//     payload.location = {
+//       type: 'Point',
+//       coordinates: payload.location.coordinates,
+//     };
+//
+//     payload.author_location = {
+//       type: "Point",
+//       coordinates: payload.author_location.coordinates,
+//     }
+//
+//     const response = await fetch(`/api/materials/${route.params.id}`, {
+//       method: 'PUT',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         Accept: 'application/json',
+//       },
+//       body: JSON.stringify(payload),
+//     });
+//
+//     if (!response.ok) {
+//       const data = await response.json();
+//       if (data.errors) {
+//         errors.value = data.errors;
+//         toast.add({
+//           title: 'Error!',
+//           description: 'Failed to update material. Please check the fields.',
+//           color: 'red',
+//           timeout: 3000,
+//         });
+//       } else {
+//         throw new Error(data.message || 'Unknown error occurred');
+//       }
+//     } else {
+//       toast.add({
+//         title: 'Success!',
+//         description: 'Material has been updated successfully',
+//         color: 'green',
+//         timeout: 3000,
+//       });
+//       await router.push('/');
+//     }
+//   } catch (error) {
+//     console.error('Error updating material:', error);
+//     if (!Object.keys(errors.value).length) {
+//       toast.add({
+//         title: 'Error!',
+//         description: 'Failed to update material due to a network error. Please try again.',
+//         color: 'red',
+//         timeout: 3000,
+//       });
+//     }
+//   } finally {
+//     loading.value = false;
+//   }
+// };
+
 const updateMaterial = async () => {
   try {
     loading.value = true;
     errors.value = {};
     const newErrors = {};
+
+    // Валидация
     if (!material.value.language_id) newErrors['language_id'] = ['Language ID is required'];
     if (!material.value.topic_id) newErrors['topic_id'] = ['Topic ID is required'];
     if (!material.value.country_id) newErrors['country_id'] = ['Country ID is required'];
     if (!material.value.start_year) newErrors['start_year'] = ['Start year is required'];
     if (!material.value.end_year) newErrors['end_year'] = ['End year is required'];
     if (!material.value.medium) newErrors['medium'] = ['Medium is required'];
+
+    // Валидация URL
+    const validateUrl = (url, field) => {
+      try {
+        new URL(url);
+      } catch {
+        newErrors[field] = [`Invalid ${field.replace('_', ' ')} URL`];
+      }
+    };
+
     if (!material.value.book_url) newErrors['book_url'] = ['Book URL is required'];
+    else validateUrl(material.value.book_url, 'book_url');
+
     if (!material.value.video) newErrors['video'] = ['Video URL is required'];
+    else validateUrl(material.value.video, 'video');
+
     if (!material.value.source_url) newErrors['source_url'] = ['Source URL is required'];
+    else validateUrl(material.value.source_url, 'source_url');
+
     if (!material.value.author_url) newErrors['author_url'] = ['Author URL is required'];
+    else validateUrl(material.value.author_url, 'author_url');
+
+    // Валидация локаций
     if (!material.value.location.coordinates.length)
       newErrors['location'] = ['Location coordinates are required'];
-    const languageCodes = languages.value.map((lang) => lang.code);
+
+    if (!material.value.author_location.coordinates.length)
+      newErrors['author_location'] = ['Author location coordinates are required'];
+
+    // Валидация языковых полей
+    const languageCodes = languages.value.map(lang => lang.code);
     let hasValidLanguage = false;
+
     for (const code of languageCodes) {
       if (
-          material.value.title[code] &&
-          material.value.author[code] &&
-          material.value.short_description[code] &&
-          material.value.full_text[code] &&
-          material.value.source[code]
+          material.value.title[code]?.trim() &&
+          material.value.author[code]?.trim() &&
+          material.value.short_description[code]?.trim() &&
+          material.value.full_text[code]?.trim() &&
+          material.value.source[code]?.trim()
       ) {
         hasValidLanguage = true;
         break;
       }
     }
+
     if (!hasValidLanguage) {
       newErrors['language_fields'] = ['At least one language must have all fields filled'];
     }
+
     if (Object.keys(newErrors).length > 0) {
       errors.value = newErrors;
       toast.add({
@@ -721,20 +908,65 @@ const updateMaterial = async () => {
       });
       return;
     }
-    const payload = toRaw(material.value);
-    payload.location = {
-      type: 'Point',
-      coordinates: payload.location.coordinates,
-    };
-    const response = await fetch(`/api/materials/${route.params.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify(payload),
+
+    // Создаем FormData для отправки файлов
+    const formData = new FormData();
+
+    // Основные поля
+    formData.append('language_id', material.value.language_id);
+    formData.append('topic_id', material.value.topic_id);
+    formData.append('country_id', material.value.country_id);
+    formData.append('poster', material.value.poster);
+    formData.append('start_year', material.value.start_year);
+    formData.append('end_year', material.value.end_year);
+    formData.append('medium', material.value.medium);
+    formData.append('book_url', material.value.book_url);
+    formData.append('video', material.value.video);
+    formData.append('source_url', material.value.source_url);
+    formData.append('author_url', material.value.author_url);
+
+    // Теги
+    material.value.tags.forEach(tag => {
+      formData.append('tags[]', tag);
     });
 
+    // Локации
+    formData.append('location[type]', 'Point');
+    formData.append('location[coordinates][0]', material.value.location.coordinates[0]);
+    formData.append('location[coordinates][1]', material.value.location.coordinates[1]);
+
+    formData.append('author_location[type]', 'Point');
+    formData.append('author_location[coordinates][0]', material.value.author_location.coordinates[0]);
+    formData.append('author_location[coordinates][1]', material.value.author_location.coordinates[1]);
+
+    // Многоязычные поля
+    const appendLocalized = (prefix, obj) => {
+      for (const [lang, value] of Object.entries(obj)) {
+        formData.append(`${prefix}[${lang}]`, value);
+      }
+    };
+
+    appendLocalized('title', material.value.title);
+    appendLocalized('author', material.value.author);
+    appendLocalized('short_description', material.value.short_description);
+    appendLocalized('full_text', material.value.full_text);
+    appendLocalized('source', material.value.source);
+
+    // Изображение (если выбрано новое)
+    if (selectedFile.value) {
+      formData.append('image', selectedFile.value);
+    }
+
+    // Отправка запроса
+    const response = await fetch(`/api/materials/${route.params.id}`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-HTTP-Method-Override': 'PUT' // Для Laravel
+      }
+    });
+
+    // Обработка ответа
     if (!response.ok) {
       const data = await response.json();
       if (data.errors) {
@@ -759,14 +991,12 @@ const updateMaterial = async () => {
     }
   } catch (error) {
     console.error('Error updating material:', error);
-    if (!Object.keys(errors.value).length) {
-      toast.add({
-        title: 'Error!',
-        description: 'Failed to update material due to a network error. Please try again.',
-        color: 'red',
-        timeout: 3000,
-      });
-    }
+    toast.add({
+      title: 'Error!',
+      description: 'Failed to update material due to a network error. Please try again.',
+      color: 'red',
+      timeout: 3000,
+    });
   } finally {
     loading.value = false;
   }
